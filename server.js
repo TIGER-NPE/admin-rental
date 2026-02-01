@@ -513,10 +513,20 @@ app.get('/api/setup', async (req, res) => {
   }
 });
 
-// Serve the main page
-app.get('/', (req, res) => {
+// Serve static files from dist folder (React build)
+app.use(express.static(path.join(__dirname, 'dist')));
+
+// Serve uploads folder
+app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads')));
+
+// SPA routing: serve index.html for all non-API routes
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Start server
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Frontend: http://localhost:${PORT}`);
+  console.log(`API: http://localhost:${PORT}/api/cars`);
+});
