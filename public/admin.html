@@ -187,8 +187,40 @@
         const API_BASE = '/api';
         let authToken = localStorage.getItem('adminToken');
 
+        // Always verify token with server on page load
         if (authToken) {
-            showDashboard();
+            verifyToken(authToken).then(isValid => {
+                if (isValid) {
+                    showDashboard();
+                } else {
+                    // Token invalid, clear and show login
+                    localStorage.removeItem('adminToken');
+                    authToken = null;
+                    showLogin();
+                }
+            });
+        } else {
+            showLogin();
+        }
+
+        // Verify token with server
+        async function verifyToken(token) {
+            try {
+                const response = await fetch(API_BASE + '/admin/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: token })
+                });
+                const data = await response.json();
+                return data.success === true;
+            } catch {
+                return false;
+            }
+        }
+
+        function showLogin() {
+            document.getElementById('loginSection').style.display = 'flex';
+            document.getElementById('dashboardSection').classList.remove('active');
         }
 
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
@@ -305,9 +337,13 @@
                 year: parseInt(document.getElementById('carYear').value),
                 price_per_day: parseFloat(document.getElementById('carPrice').value),
                 whatsapp_number: document.getElementById('carWhatsapp').value,
-                image_url: document.getElementById('carImage').value,
-                description: document.getElementById('carDescription').value,
-                available: document.getElementById('carAvailable').checked
+                images: document.getElementById('carImage').value.trim() ? [document.getElementById('carImage').value.trim()] : [],
+                image_url: document.getElementById('carImage').value.trim(),
+                description: document.getElementById('carDescription').value || '',
+                available: document.getElementById('carAvailable').checked,
+                seats: 5,
+                transmission: 'Automatic',
+                doors: 4
             };
             
             var carId = document.getElementById('carId').value;
