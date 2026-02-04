@@ -1,9 +1,9 @@
 [build.environment]
-  NPM_FLAGS = "--include=dev"
+  NPM_FLAGS = "--include=dev --legacy-peer-deps"
   NODE_VERSION = "18"
 
 [build]
-  command = "npm install && npm run build"
+  command = "rm -f package-lock.json && npm install && npm run build"
   publish = "dist"
 
 [[redirects]]
