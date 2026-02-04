@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - RentACar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1a1a2e; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        
+        /* Header */
+        .header { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 16px 24px; margin-bottom: 24px; }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 700; color: #1a1a2e; }
+        .logo svg { color: #25D366; }
+        .logout-btn { padding: 8px 16px; background: #fee2e2; color: #dc2626; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; }
+        
+        /* Login */
+        .login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f8fafc; padding: 20px; }
+        .login-card { background: white; border-radius: 16px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .login-card h1 { text-align: center; margin-bottom: 24px; font-size: 1.5rem; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
+        .form-group input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; }
+        .form-group input:focus { outline: none; border-color: #25D366; }
+        .btn { padding: 12px 24px; background: #25D366; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; width: 100%; }
+        .btn:hover { background: #20bd5a; }
+        .error { color: #dc2626; text-align: center; margin-top: 12px; }
+        
+        /* Dashboard */
+        .dashboard { display: none; }
+        .dashboard.active { display: block; }
+        
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .page-header h1 { font-size: 1.75rem; }
+        .btn-add { display: flex; align-items: center; gap: 8px; padding: 12px 24px; background: #1a1a2e; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 16px; padding: 32px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative; }
+        .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 24px; cursor: pointer; color: #9ca3af; }
+        .modal h2 { margin-bottom: 24px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .form-group.checkbox { display: flex; align-items: center; gap: 8px; }
+        .form-group.checkbox input { width: auto; }
+        .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
+        .btn-cancel { background: #f3f4f6; color: #4b5563; }
+        .btn-delete { background: #dc2626; }
+        
+        /* Table */
+        .cars-table { width: 100%; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .cars-table th, .cars-table td { padding: 16px; text-align: left; border-bottom: 1px solid #f3f4f6; }
+        .cars-table th { background: #f8fafc; font-weight: 600; }
+        .cars-table tr:hover { background: #f8fafc; }
+        .car-thumb { width: 60px; height: 40px; object-fit: cover; border-radius: 6px; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 0.875rem; font-weight: 500; }
+        .status-available { background: #dcfce7; color: #16a34a; }
+        .status-unavailable { background: #fee2e2; color: #dc2626; }
+        .action-btns { display: flex; gap: 8px; }
+        .btn-edit { padding: 6px 12px; background: #e0f2fe; color: #0284c7; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; }
+        .btn-delete-car { padding: 6px 12px; background: #fee2e2; color: #dc2626; border: none; border-radius: 6px; cursor: pointer; font-size: 0.875rem; }
+        
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .cars-table { overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="loginSection" class="login-page">
+        <div class="login-card">
+            <h1>Admin Login</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="adminPassword" placeholder="Enter admin password">
+                </div>
+                <button type="submit" class="btn">Login</button>
+                <p id="loginError" class="error"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboardSection" class="dashboard">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#25D366" stroke-width="2">
+                        <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+                        <circle cx="7" cy="17" r="2"/>
+                        <circle cx="17" cy="17" r="2"/>
+                    </svg>
+                    <span>RentACar Admin</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="page-header">
+                <h1>Manage Cars</h1>
+                <button class="btn-add" onclick="openModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    Add New Car
+                </button>
+            </div>
+
+            <table class="cars-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Model</th>
+                        <th>Year</th>
+                        <th>Price/Day</th>
+                        <th>WhatsApp</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="carsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="carModal" class="modal-overlay">
+        <div class="modal">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h2 id="modalTitle">Add New Car</h2>
+            <form id="carForm">
+                <input type="hidden" id="carId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Car Name *</label>
+                        <input type="text" id="carName" required placeholder="e.g., Toyota">
+                    </div>
+                    <div class="form-group">
+                        <label>Model *</label>
+                        <input type="text" id="carModel" required placeholder="e.g., Corolla">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Year *</label>
+                        <input type="number" id="carYear" required min="2000" max="2030" value="2024">
+                    </div>
+                    <div class="form-group">
+                        <label>Price/Day (RWF) *</label>
+                        <input type="number" id="carPrice" required min="0" step="0.01" placeholder="450">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp Number *</label>
+                    <input type="text" id="carWhatsapp" required placeholder="e.g., 250788123456">
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="url" id="carImage" placeholder="https://example.com/car.jpg">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" id="carDescription" placeholder="Brief description">
+                </div>
+                <div class="form-group checkbox">
+                    <input type="checkbox" id="carAvailable" checked>
+                    <label for="carAvailable">Available for rent</label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn" id="submitBtn">Add Car</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let authToken = localStorage.getItem('adminToken');
+
+        // Always verify token with server on page load
+        if (authToken) {
+            verifyToken(authToken).then(isValid => {
+                if (isValid) {
+                    showDashboard();
+                } else {
+                    // Token invalid, clear and show login
+                    localStorage.removeItem('adminToken');
+                    authToken = null;
+                    showLogin();
+                }
+            });
+        } else {
+            showLogin();
+        }
+
+        // Verify token with server
+        async function verifyToken(token) {
+            try {
+                const response = await fetch(API_BASE + '/admin/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: token })
+                });
+                const data = await response.json();
+                return data.success === true;
+            } catch {
+                return false;
+            }
+        }
+
+        function showLogin() {
+            document.getElementById('loginSection').style.display = 'flex';
+            document.getElementById('dashboardSection').classList.remove('active');
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const password = document.getElementById('adminPassword').value;
+            
+            try {
+                const response = await fetch(API_BASE + '/admin/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: password })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    localStorage.setItem('adminToken', password);
+                    authToken = password;
+                    showDashboard();
+                    document.getElementById('loginError').textContent = '';
+                } else {
+                    document.getElementById('loginError').textContent = 'Invalid password';
+                }
+            } catch (error) {
+                document.getElementById('loginError').textContent = 'Connection error - make sure the API server is running';
+            }
+        });
+
+        function showDashboard() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboardSection').classList.add('active');
+            loadCars();
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            authToken = null;
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('dashboardSection').classList.remove('active');
+            document.getElementById('adminPassword').value = '';
+        }
+
+        async function loadCars() {
+            try {
+                const response = await fetch(API_BASE + '/admin/cars', {
+                    headers: { 'x-admin-password': authToken }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderCars(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading cars:', error);
+            }
+        }
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('en-RW', {
+                style: 'currency',
+                currency: 'RWF',
+                minimumFractionDigits: 0
+            }).format(price);
+        }
+
+        function renderCars(cars) {
+            const tbody = document.getElementById('carsTableBody');
+            tbody.innerHTML = cars.map(function(car) {
+                return '<tr>' +
+                    '<td><img src="' + (car.image_url || 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=100') + '" alt="' + car.name + '" class="car-thumb"></td>' +
+                    '<td>' + car.name + '</td>' +
+                    '<td>' + car.model + '</td>' +
+                    '<td>' + car.year + '</td>' +
+                    '<td>' + formatPrice(car.price_per_day) + '</td>' +
+                    '<td>' + car.whatsapp_number + '</td>' +
+                    '<td><span class="status-badge ' + (car.available ? 'status-available' : 'status-unavailable') + '">' + (car.available ? 'Available' : 'Unavailable') + '</span></td>' +
+                    '<td><div class="action-btns"><button class="btn-edit" onclick="editCar(' + car.id + ', \'' + car.name.replace(/'/g, "\\'") + '\', \'' + car.model.replace(/'/g, "\\'") + '\', ' + car.year + ', ' + car.price_per_day + ', \'' + car.whatsapp_number + '\', \'' + (car.image_url || '').replace(/'/g, "\\'") + '\', \'' + (car.description || '').replace(/'/g, "\\'") + '\', ' + car.available + ')">Edit</button><button class="btn-delete-car" onclick="deleteCar(' + car.id + ')">Delete</button></div></td></tr>';
+            }).join('');
+        }
+
+        function openModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Car';
+            document.getElementById('submitBtn').textContent = 'Add Car';
+            document.getElementById('carForm').reset();
+            document.getElementById('carId').value = '';
+            document.getElementById('carAvailable').checked = true;
+            document.getElementById('carModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('carModal').classList.remove('active');
+        }
+
+        function editCar(id, name, model, year, price, whatsapp, image, description, available) {
+            document.getElementById('modalTitle').textContent = 'Edit Car';
+            document.getElementById('submitBtn').textContent = 'Update Car';
+            document.getElementById('carId').value = id;
+            document.getElementById('carName').value = name;
+            document.getElementById('carModel').value = model;
+            document.getElementById('carYear').value = year;
+            document.getElementById('carPrice').value = price;
+            document.getElementById('carWhatsapp').value = whatsapp;
+            document.getElementById('carImage').value = image;
+            document.getElementById('carDescription').value = description;
+            document.getElementById('carAvailable').checked = available;
+            document.getElementById('carModal').classList.add('active');
+        }
+
+        document.getElementById('carForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            var carData = {
+                name: document.getElementById('carName').value,
+                model: document.getElementById('carModel').value,
+                year: parseInt(document.getElementById('carYear').value),
+                price_per_day: parseFloat(document.getElementById('carPrice').value),
+                whatsapp_number: document.getElementById('carWhatsapp').value,
+                images: document.getElementById('carImage').value.trim() ? [document.getElementById('carImage').value.trim()] : [],
+                image_url: document.getElementById('carImage').value.trim(),
+                description: document.getElementById('carDescription').value || '',
+                available: document.getElementById('carAvailable').checked,
+                seats: 5,
+                transmission: 'Automatic',
+                doors: 4
+            };
+            
+            var carId = document.getElementById('carId').value;
+            var isEdit = !!carId;
+            
+            try {
+                var url = isEdit ? API_BASE + '/admin/cars/' + carId : API_BASE + '/admin/cars';
+                var method = isEdit ? 'PUT' : 'POST';
+                
+                var response = await fetch(url, {
+                    method: method,
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-admin-password': authToken
+                    },
+                    body: JSON.stringify(carData)
+                });
+                
+                var data = await response.json();
+                
+                if (data.success) {
+                    closeModal();
+                    loadCars();
+                } else {
+                    alert(data.message || 'Failed to save car');
+                }
+            } catch (error) {
+                alert('Error saving car');
+            }
+        });
+
+        async function deleteCar(id) {
+            if (!confirm('Are you sure you want to delete this car?')) return;
+            
+            try {
+                var response = await fetch(API_BASE + '/admin/cars/' + id, {
+                    method: 'DELETE',
+                    headers: { 'x-admin-password': authToken }
+                });
+                
+                var data = await response.json();
+                
+                if (data.success) {
+                    loadCars();
+                } else {
+                    alert(data.message || 'Failed to delete car');
+                }
+            } catch (error) {
+                alert('Error deleting car');
+            }
+        }
+
+        document.getElementById('carModal').addEventListener('click', function(e) {
+            if (e.target.id === 'carModal') closeModal();
+        });
+    </script>
+</body>
+</html>
