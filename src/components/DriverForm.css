@@ -61,6 +61,28 @@
   margin-bottom: 16px;
 }
 
+.driver-form .form-group small {
+  display: block;
+  margin-top: 4px;
+  color: #888;
+  font-size: 12px;
+}
+
+.driver-form .url-preview {
+  margin-top: 8px;
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.driver-form .url-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .driver-form .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;

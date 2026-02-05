@@ -14,6 +14,7 @@ function DriverForm({ driver, password, onClose, onSubmit }) {
     photo_url: ''
   })
   const [uploading, setUploading] = useState(false)
+  const [urlPreview, setUrlPreview] = useState('')
 
   useEffect(() => {
     if (driver) {
@@ -31,6 +32,11 @@ function DriverForm({ driver, password, onClose, onSubmit }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target
+    
+    // Update URL preview when photo_url changes
+    if (name === 'photo_url') {
+      setUrlPreview(value)
+    }
     
     // Auto-add +250 to phone number if not present
     if (name === 'phone') {
@@ -117,6 +123,12 @@ function DriverForm({ driver, password, onClose, onSubmit }) {
               onChange={handleChange}
               placeholder="https://example.com/driver-photo.jpg"
             />
+            <small>Paste any image URL from Google Images, Facebook, etc.</small>
+            {urlPreview && (
+              <div className="url-preview">
+                <img src={urlPreview} alt="Preview" onError={(e) => e.target.style.display='none'} />
+              </div>
+            )}
           </div>
           
           <div className="form-row">
