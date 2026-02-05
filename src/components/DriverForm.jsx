@@ -123,10 +123,13 @@ function DriverForm({ driver, password, onClose, onSubmit }) {
               onChange={handleChange}
               placeholder="https://example.com/driver-photo.jpg"
             />
-            <small>Paste any image URL from Google Images, Facebook, etc.</small>
+            <small>Use images from Google Photos, Imgur, or direct image links. Avoid Facebook/Instagram URLs (CORS blocked).</small>
             {urlPreview && (
               <div className="url-preview">
-                <img src={urlPreview} alt="Preview" onError={(e) => e.target.style.display='none'} />
+                <img src={urlPreview} alt="Preview" onError={(e) => {
+                  e.target.style.display='none';
+                  e.target.parentElement.innerHTML = '<span style="color: #e74c3c; font-size: 12px;">⚠️ Image blocked by CORS. Try a different URL.</span>';
+                }} />
               </div>
             )}
           </div>
