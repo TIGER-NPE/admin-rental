@@ -143,7 +143,7 @@ function App() {
       <div className="login-page">
         <div className="login-card">
           <div className="login-header">
-            <img src="../log.png" alt="" className="logo-image" />
+            <img src="/logo.svg" alt="" className="logo-image" />
             <h1>RentACar Admin</h1>
             <p>Manage your car rental platform</p>
           </div>
@@ -170,7 +170,7 @@ function App() {
       <header className="admin-header">
         <div className="header-content">
           <div className="logo">
-            <img src="../log.png" alt="" className="logo-image" />
+            <img src="/logo.svg" alt="" className="logo-image" />
             <span className="logo-text">RentACar Admin</span>
           </div>
           <button className="btn-logout" onClick={handleLogout}>Logout</button>
