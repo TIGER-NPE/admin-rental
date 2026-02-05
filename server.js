@@ -220,12 +220,12 @@ app.get('/api/admin/drivers', authenticateAdmin, async (req, res) => {
 
 app.post('/api/admin/drivers', authenticateAdmin, async (req, res) => {
   try {
-    const { name, phone, email, license_number, vehicle_assigned, status } = req.body;
+    const { name, phone, email, license_number, vehicle_assigned, status, photo_url } = req.body;
     
     const result = await pool.query(
-      `INSERT INTO drivers (name, phone, email, license_number, vehicle_assigned, status) 
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-      [name, phone || '', email || '', license_number || '', vehicle_assigned || '', status || 'available']
+      `INSERT INTO drivers (name, phone, email, license_number, vehicle_assigned, status, photo_url) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
+      [name, phone || '', email || '', license_number || '', vehicle_assigned || '', status || 'available', photo_url || '']
     );
     
     res.json({ success: true, message: 'Driver added successfully', id: result.rows[0].id });
@@ -236,11 +236,11 @@ app.post('/api/admin/drivers', authenticateAdmin, async (req, res) => {
 
 app.put('/api/admin/drivers/:id', authenticateAdmin, async (req, res) => {
   try {
-    const { name, phone, email, license_number, vehicle_assigned, status } = req.body;
+    const { name, phone, email, license_number, vehicle_assigned, status, photo_url } = req.body;
     
     await pool.query(
-      `UPDATE drivers SET name = $1, phone = $2, email = $3, license_number = $4, vehicle_assigned = $5, status = $6 WHERE id = $7`,
-      [name, phone || '', email || '', license_number || '', vehicle_assigned || '', status || 'available', req.params.id]
+      `UPDATE drivers SET name = $1, phone = $2, email = $3, license_number = $4, vehicle_assigned = $5, status = $6, photo_url = $7 WHERE id = $8`,
+      [name, phone || '', email || '', license_number || '', vehicle_assigned || '', status || 'available', photo_url || '', req.params.id]
     );
     
     res.json({ success: true, message: 'Driver updated successfully' });
