@@ -54,19 +54,16 @@ function DriverForm({ driver, password, onClose, onSubmit }) {
     e.preventDefault()
     setUploading(true)
     
-    console.log('Submitting driver formData:', formData)
-    console.log('Driver Photo URL being sent:', formData.photo_url)
+    console.log('=== DRIVER FORM DEBUG ===')
+    console.log('formData:', formData)
+    console.log('photo_url being sent:', formData.photo_url)
     
     try {
-      // First save driver data
       const url = driver 
         ? `${API_BASE}/admin/drivers/${driver.id}`
         : `${API_BASE}/admin/drivers`
       
       const method = driver ? 'PUT' : 'POST'
-      
-      console.log('API URL:', url)
-      console.log('Method:', method)
       
       const response = await fetch(url, {
         method,
@@ -79,14 +76,17 @@ function DriverForm({ driver, password, onClose, onSubmit }) {
       
       console.log('Response status:', response.status)
       const data = await response.json()
-      console.log('Response data:', data)
+      console.log('API Response:', data)
       
       if (data.success) {
+        console.log('Driver saved successfully!')
         onSubmit()
       } else {
+        console.error('API Error:', data.message)
         alert(data.message || 'Failed to save driver')
       }
-    } catch {
+    } catch (err) {
+      console.error('Connection error:', err)
       alert('Connection error')
     } finally {
       setUploading(false)

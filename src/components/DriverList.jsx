@@ -51,16 +51,29 @@ function DriverList({ password, onEdit, refreshKey }) {
 
   const fetchDrivers = async () => {
     try {
+      console.log('Fetching drivers from:', `${API_BASE}/admin/drivers`)
       const response = await fetch(`${API_BASE}/admin/drivers`, {
         headers: { 'x-admin-password': password }
       })
       const data = await response.json()
+      console.log('API Response:', data)
+      console.log('Drivers data:', data.data)
+      
       if (data.success) {
+        // Check if photo_url exists in each driver
+        data.data.forEach((driver, index) => {
+          console.log(`Driver ${index + 1}:`, {
+            id: driver.id,
+            name: driver.name,
+            photo_url: driver.photo_url
+          })
+        })
         setDrivers(data.data)
       } else {
         setError('Failed to fetch drivers')
       }
-    } catch {
+    } catch (err) {
+      console.error('Connection error:', err)
       setError('Connection error')
     } finally {
       setLoading(false)
