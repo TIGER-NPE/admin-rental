@@ -16,11 +16,26 @@ const formatPhotoUrl = (url) => {
 const DriverPhoto = ({ photoUrl, name }) => {
   const [error, setError] = useState(false)
   const [imgSrc, setImgSrc] = useState(photoUrl)
+  const [loading, setLoading] = useState(true)
+  
+  console.log('DriverPhoto rendering:', { photoUrl, name, imgSrc, error })
   
   // Get first letter of name for fallback
   const initial = name ? name.charAt(0).toUpperCase() : '?'
   
+  const handleError = () => {
+    console.error('Image failed to load:', imgSrc)
+    setError(true)
+    setLoading(false)
+  }
+  
+  const handleLoad = () => {
+    console.log('Image loaded successfully:', imgSrc)
+    setLoading(false)
+  }
+  
   if (!imgSrc || error) {
+    console.log('Showing placeholder (no URL or error)')
     return (
       <div className="driver-photo-placeholder">
         <span className="driver-initial">{initial}</span>
@@ -34,8 +49,10 @@ const DriverPhoto = ({ photoUrl, name }) => {
         src={imgSrc} 
         alt={name} 
         className="driver-photo"
-        onError={() => setError(true)}
+        onError={handleError}
+        onLoad={handleLoad}
       />
+      {loading && <span className="loading-text">...</span>}
     </div>
   )
 }
