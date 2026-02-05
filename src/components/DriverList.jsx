@@ -15,25 +15,28 @@ const formatPhotoUrl = (url) => {
 // Fallback to placeholder when image fails to load
 const DriverPhoto = ({ photoUrl, name }) => {
   const [error, setError] = useState(false)
+  const [imgSrc, setImgSrc] = useState(photoUrl)
   
-  if (!photoUrl || error) {
+  // Get first letter of name for fallback
+  const initial = name ? name.charAt(0).toUpperCase() : '?'
+  
+  if (!imgSrc || error) {
     return (
       <div className="driver-photo-placeholder">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
+        <span className="driver-initial">{initial}</span>
       </div>
     )
   }
   
   return (
-    <img 
-      src={photoUrl} 
-      alt={name} 
-      className="driver-photo"
-      onError={() => setError(true)}
-    />
+    <div className="driver-photo-container">
+      <img 
+        src={imgSrc} 
+        alt={name} 
+        className="driver-photo"
+        onError={() => setError(true)}
+      />
+    </div>
   )
 }
 
