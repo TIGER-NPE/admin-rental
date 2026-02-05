@@ -2,7 +2,7 @@ services:
   - type: web
     name: rental-system
     env: static
-    buildCommand: npm ci && chmod +x node_modules/.bin/vite && npx vite build
+    buildCommand: npm ci && npm rebuild && npm run build
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
