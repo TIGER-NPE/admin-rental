@@ -12,6 +12,31 @@ const formatPhotoUrl = (url) => {
   return url
 }
 
+// Fallback to placeholder when image fails to load
+const DriverPhoto = ({ photoUrl, name }) => {
+  const [error, setError] = useState(false)
+  
+  if (!photoUrl || error) {
+    return (
+      <div className="driver-photo-placeholder">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+    )
+  }
+  
+  return (
+    <img 
+      src={photoUrl} 
+      alt={name} 
+      className="driver-photo"
+      onError={() => setError(true)}
+    />
+  )
+}
+
 function DriverList({ password, onEdit, refreshKey }) {
   const [drivers, setDrivers] = useState([])
   const [loading, setLoading] = useState(true)
@@ -104,16 +129,10 @@ function DriverList({ password, onEdit, refreshKey }) {
               <tr key={driver.id}>
                 <td>
                   <div className="driver-cell">
-                    {driver.photo_url ? (
-                      <img src={formatPhotoUrl(driver.photo_url)} alt={driver.name} className="driver-photo" />
-                    ) : (
-                      <div className="driver-photo-placeholder">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                          <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                      </div>
-                    )}
+                    <DriverPhoto 
+                      photoUrl={formatPhotoUrl(driver.photo_url)} 
+                      name={driver.name} 
+                    />
                   </div>
                 </td>
                 <td>{driver.name}</td>
