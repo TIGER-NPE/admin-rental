@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './CarList.css'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+const ADMIN_PASSWORD = 'tiger2oo8'
 
 // Helper to format image URLs for local paths
 const formatImageUrl = (url) => {
@@ -31,19 +32,19 @@ const getCarImages = (car) => {
   return []
 }
 
-function CarList({ password, onEdit, refreshKey }) {
+function CarList({ onEdit, refreshKey }) {
   const [cars, setCars] = useState([])
   const [loading, setLoading] = useState(true)
   const [currentSlide, setCurrentSlide] = useState({})
 
   useEffect(() => {
     fetchCars()
-  }, [password, refreshKey])
+  }, [refreshKey])
 
   const fetchCars = async () => {
     try {
       const response = await fetch(`${API_BASE}/admin/cars`, {
-        headers: { 'x-admin-password': password }
+        headers: { 'x-admin-password': ADMIN_PASSWORD }
       })
       const data = await response.json()
       if (data.success) {
@@ -68,7 +69,7 @@ function CarList({ password, onEdit, refreshKey }) {
     try {
       const response = await fetch(`${API_BASE}/admin/cars/${id}`, {
         method: 'DELETE',
-        headers: { 'x-admin-password': password }
+        headers: { 'x-admin-password': ADMIN_PASSWORD }
       })
       const data = await response.json()
       if (data.success) {

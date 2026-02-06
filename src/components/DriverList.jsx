@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './DriverList.css'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+const ADMIN_PASSWORD = 'tiger2oo8'
 
 // Helper to format photo URLs for local paths
 const formatPhotoUrl = (url) => {
@@ -18,24 +19,19 @@ const DriverPhoto = ({ photoUrl, name }) => {
   const [imgSrc, setImgSrc] = useState(photoUrl)
   const [loading, setLoading] = useState(true)
   
-  console.log('DriverPhoto rendering:', { photoUrl, name, imgSrc, error })
-  
   // Get first letter of name for fallback
   const initial = name ? name.charAt(0).toUpperCase() : '?'
   
   const handleError = () => {
-    console.error('Image failed to load:', imgSrc)
     setError(true)
     setLoading(false)
   }
   
   const handleLoad = () => {
-    console.log('Image loaded successfully:', imgSrc)
     setLoading(false)
   }
   
   if (!imgSrc || error) {
-    console.log('Showing placeholder (no URL or error)')
     return (
       <div className="driver-photo-placeholder">
         <span className="driver-initial">{initial}</span>
@@ -57,7 +53,7 @@ const DriverPhoto = ({ photoUrl, name }) => {
   )
 }
 
-function DriverList({ password, onEdit, refreshKey }) {
+function DriverList({ onEdit, refreshKey }) {
   const [drivers, setDrivers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -68,29 +64,17 @@ function DriverList({ password, onEdit, refreshKey }) {
 
   const fetchDrivers = async () => {
     try {
-      console.log('Fetching drivers from:', `${API_BASE}/admin/drivers`)
       const response = await fetch(`${API_BASE}/admin/drivers`, {
-        headers: { 'x-admin-password': password }
+        headers: { 'x-admin-password': ADMIN_PASSWORD }
       })
       const data = await response.json()
-      console.log('API Response:', data)
-      console.log('Drivers data:', data.data)
       
       if (data.success) {
-        // Check if photo_url exists in each driver
-        data.data.forEach((driver, index) => {
-          console.log(`Driver ${index + 1}:`, {
-            id: driver.id,
-            name: driver.name,
-            photo_url: driver.photo_url
-          })
-        })
         setDrivers(data.data)
       } else {
         setError('Failed to fetch drivers')
       }
     } catch (err) {
-      console.error('Connection error:', err)
       setError('Connection error')
     } finally {
       setLoading(false)
@@ -103,7 +87,7 @@ function DriverList({ password, onEdit, refreshKey }) {
     try {
       const response = await fetch(`${API_BASE}/admin/drivers/${id}`, {
         method: 'DELETE',
-        headers: { 'x-admin-password': password }
+        headers: { 'x-admin-password': ADMIN_PASSWORD }
       })
       const data = await response.json()
       if (data.success) {

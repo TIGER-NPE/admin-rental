@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import './App.css'
 import CarForm from './components/CarForm'
 import CarList from './components/CarList'
@@ -7,12 +7,7 @@ import DriverForm from './components/DriverForm'
 import TermsList from './components/TermsList'
 import TermsForm from './components/TermsForm'
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
-
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [editingCar, setEditingCar] = useState(null)
   const [refreshKey, setRefreshKey] = useState(0)
@@ -23,33 +18,6 @@ function App() {
   
   // Terms state
   const [editingTerm, setEditingTerm] = useState(null)
-
-  const handleLogin = async (e) => {
-    e.preventDefault()
-    try {
-      const response = await fetch(`${API_BASE}/admin/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password })
-      })
-      const data = await response.json()
-      if (data.success) {
-        setIsAuthenticated(true)
-        localStorage.setItem('adminToken', password)
-        setError('')
-      } else {
-        setError('Invalid password')
-      }
-    } catch (err) {
-      setError('Connection error - make sure the API server is running')
-    }
-  }
-
-  const handleLogout = () => {
-    setIsAuthenticated(false)
-    setPassword('')
-    localStorage.removeItem('adminToken')
-  }
 
   // Car handlers
   const handleEdit = (car) => {
@@ -114,57 +82,6 @@ function App() {
     handleTermFormClose()
   }
 
-  useEffect(() => {
-    const token = localStorage.getItem('adminToken')
-    if (token) {
-      setPassword(token)
-      verifyToken(token)
-    }
-  }, [])
-
-  const verifyToken = async (token) => {
-    try {
-      const response = await fetch(`${API_BASE}/admin/verify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: token })
-      })
-      const data = await response.json()
-      if (data.success) {
-        setIsAuthenticated(true)
-      }
-    } catch (err) {
-      console.error('Token verification failed')
-    }
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="login-page">
-        <div className="login-card">
-          <div className="login-header">
-            <img src="/logo.svg" alt="" className="logo-image" />
-            <h1>RentACar Admin</h1>
-            <p>Manage your car rental platform</p>
-          </div>
-          <form onSubmit={handleLogin}>
-            <div className="form-group">
-              <label>Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter admin password"
-              />
-            </div>
-            {error && <p className="error">{error}</p>}
-            <button type="submit" className="btn btn-full">Login</button>
-          </form>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="admin-app">
       <header className="admin-header">
@@ -173,7 +90,6 @@ function App() {
             <img src="/logo.svg" alt="" className="logo-image" />
             <span className="logo-text">RentACar Admin</span>
           </div>
-          <button className="btn-logout" onClick={handleLogout}>Logout</button>
         </div>
       </header>
 
@@ -229,7 +145,6 @@ function App() {
             </div>
 
             <CarList 
-              password={password} 
               onEdit={handleEdit} 
               refreshKey={refreshKey}
             />
@@ -249,7 +164,6 @@ function App() {
             </div>
 
             <DriverList 
-              password={password} 
               onEdit={handleEditDriver} 
               refreshKey={refreshKey}
             />
@@ -269,7 +183,6 @@ function App() {
             </div>
 
             <TermsList 
-              password={password} 
               onEdit={handleEditTerm} 
               refreshKey={refreshKey}
             />
@@ -280,7 +193,6 @@ function App() {
       {showForm && activeTab === 'cars' && (
         <CarForm 
           car={editingCar}
-          password={password}
           onClose={handleFormClose}
           onSubmit={handleFormSubmit}
         />
@@ -289,7 +201,6 @@ function App() {
       {showForm && activeTab === 'drivers' && (
         <DriverForm 
           driver={editingDriver}
-          password={password}
           onClose={handleDriverFormClose}
           onSubmit={handleDriverFormSubmit}
         />
@@ -298,7 +209,6 @@ function App() {
       {showForm && activeTab === 'terms' && (
         <TermsForm 
           term={editingTerm}
-          password={password}
           onClose={handleTermFormClose}
           onSubmit={handleTermFormSubmit}
         />

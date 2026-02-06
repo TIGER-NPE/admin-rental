@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import './DriverForm.css'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+const ADMIN_PASSWORD = 'tiger2oo8'
 
-function DriverForm({ driver, password, onClose, onSubmit }) {
+function DriverForm({ driver, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -69,7 +70,7 @@ function DriverForm({ driver, password, onClose, onSubmit }) {
         method,
         headers: { 
           'Content-Type': 'application/json',
-          'x-admin-password': password
+          'x-admin-password': ADMIN_PASSWORD
         },
         body: JSON.stringify(formData)
       })

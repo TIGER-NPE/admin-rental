@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './CarForm.css'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+const ADMIN_PASSWORD = 'tiger2oo8'
 
 // Helper to format date for input field (YYYY-MM-DD)
 const formatDateForInput = (dateStr) => {
@@ -14,7 +15,7 @@ const formatDateForInput = (dateStr) => {
   return date.toISOString().split('T')[0]
 }
 
-function CarForm({ car, password, onClose, onSubmit }) {
+function CarForm({ car, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
     name: '',
     model: '',
@@ -140,7 +141,7 @@ function CarForm({ car, password, onClose, onSubmit }) {
         method,
         headers: {
           'Content-Type': 'application/json',
-          'x-admin-password': password
+          'x-admin-password': ADMIN_PASSWORD
         },
         body: JSON.stringify(formData)
       })

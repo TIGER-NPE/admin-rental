@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import './TermsList.css'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+const ADMIN_PASSWORD = 'tiger2oo8'
 
-function TermsList({ password, onEdit, refreshKey }) {
+function TermsList({ onEdit, refreshKey }) {
   const [terms, setTerms] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -15,7 +16,7 @@ function TermsList({ password, onEdit, refreshKey }) {
   const fetchTerms = async () => {
     try {
       const response = await fetch(`${API_BASE}/admin/terms`, {
-        headers: { 'x-admin-password': password }
+        headers: { 'x-admin-password': ADMIN_PASSWORD }
       })
       const data = await response.json()
       if (data.success) {
@@ -36,7 +37,7 @@ function TermsList({ password, onEdit, refreshKey }) {
     try {
       const response = await fetch(`${API_BASE}/admin/terms/${id}`, {
         method: 'DELETE',
-        headers: { 'x-admin-password': password }
+        headers: { 'x-admin-password': ADMIN_PASSWORD }
       })
       const data = await response.json()
       if (data.success) {

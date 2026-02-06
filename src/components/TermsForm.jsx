@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import './TermsForm.css'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+const ADMIN_PASSWORD = 'tiger2oo8'
 
-function TermsForm({ term, password, onClose, onSubmit }) {
+function TermsForm({ term, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -35,7 +36,7 @@ function TermsForm({ term, password, onClose, onSubmit }) {
         method,
         headers: { 
           'Content-Type': 'application/json',
-          'x-admin-password': password
+          'x-admin-password': ADMIN_PASSWORD
         },
         body: JSON.stringify(formData)
       })
