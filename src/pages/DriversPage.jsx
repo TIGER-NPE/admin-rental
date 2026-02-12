@@ -31,7 +31,7 @@ function DriversPage() {
   const fetchDrivers = async () => {
     try {
       // Fetch all drivers, not just available ones
-      const response = await fetch(`${API_BASE}/api/drivers`)
+      const response = await fetch(`${API_BASE}/drivers`)
       const data = await response.json()
       if (data.success) {
         setDrivers(data.data)

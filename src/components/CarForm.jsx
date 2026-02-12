@@ -476,7 +476,7 @@ function CarForm({ car, onClose, onSubmit }) {
                 </div>
               ) : (
                 <div className="no-images">
-                  <img src="/favicon.ico" alt="No image" />
+                  <img src="/logo.svg" alt="No image" />
                   <p>Upload car images below</p>
                 </div>
               )}

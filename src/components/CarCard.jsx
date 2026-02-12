@@ -105,7 +105,7 @@ function CarCard({ car, onRent, onClick, selectedDate }) {
 
   const getImageUrl = (url) => {
     if (!url) {
-      return '/favicon.ico'
+      return '/logo.svg'
     }
     // Handle blob URLs (local preview)
     if (url.startsWith('blob:')) {
@@ -148,7 +148,7 @@ function CarCard({ car, onRent, onClick, selectedDate }) {
               src={getImageUrl(images[currentSlide])} 
               alt={`${car.name} ${car.model}`}
               onError={(e) => {
-                e.target.src = '/favicon.ico'
+                e.target.src = '/logo.svg'
               }}
             />
             
