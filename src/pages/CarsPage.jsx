@@ -9,7 +9,7 @@ import DatePicker from '../components/DatePicker'
 import LanguageSelector from '../components/LanguageSelector'
 import { useLanguage } from '../context/LanguageContext'
 
-const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://car-rental-api-pp6g.onrender.com' : 'http://localhost:3000')
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
 
 function CarsPage() {
   const { t } = useLanguage()

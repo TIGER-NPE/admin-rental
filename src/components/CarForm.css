@@ -364,20 +364,28 @@
 
 .add-image-row {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
-.add-image-row input {
+.add-image-row input[type="file"] {
   flex: 1;
-  padding: 10px 12px;
+  padding: 8px;
   border: 2px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  background: #f9fafb;
 }
 
-.add-image-row input:focus {
+.add-image-row input[type="file"]:focus {
   outline: none;
   border-color: #25D366;
+}
+
+.add-image-row .upload-status {
+  color: #25D366;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .add-image-row button {

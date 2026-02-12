@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './CarForm.css'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
@@ -32,9 +32,11 @@ function CarForm({ car, onClose, onSubmit }) {
     end_date: '',
     images: []
   })
-  const [newImageUrl, setNewImageUrl] = useState('')
   const [currentSlide, setCurrentSlide] = useState(0)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [pendingImages, setPendingImages] = useState([]) // For new cars before save
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     if (car) {
@@ -92,26 +94,109 @@ function CarForm({ car, onClose, onSubmit }) {
     }
   }
 
-  const addImage = () => {
-    if (newImageUrl.trim()) {
+  const handleFileUpload = async (e) => {
+    const files = Array.from(e.target.files)
+    if (files.length === 0) return
+
+    // For existing cars, upload directly
+    if (car?.id) {
+      await uploadImagesToServer(files, car.id)
+    } else {
+      // For new cars, create preview URLs
+      const newImages = files.map(file => URL.createObjectURL(file))
+      setPendingImages(prev => [...prev, ...files])
       setFormData(prev => ({
         ...prev,
-        images: [...prev.images, newImageUrl.trim()]
+        images: [...prev.images, ...newImages]
       }))
-      setNewImageUrl('')
-      // Show the newly added image
       setCurrentSlide(formData.images.length)
+    }
+    
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
     }
   }
 
-  const removeImage = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }))
-    // Adjust current slide if needed
-    if (currentSlide >= formData.images.length - 1) {
-      setCurrentSlide(Math.max(0, formData.images.length - 2))
+  const uploadImagesToServer = async (files, carId) => {
+    setUploading(true)
+    
+    try {
+      const formDataUpload = new FormData()
+      files.forEach(file => {
+        formDataUpload.append('photos', file)
+      })
+
+      const response = await fetch(`${API_BASE}/admin/cars/${carId}/images`, {
+        method: 'POST',
+        headers: {
+          'x-admin-password': ADMIN_PASSWORD
+        },
+        body: formDataUpload
+      })
+
+      const data = await response.json()
+      
+      if (data.success) {
+        setFormData(prev => ({
+          ...prev,
+          images: data.images
+        }))
+        setCurrentSlide(data.images.length - 1)
+      } else {
+        alert(data.message || 'Failed to upload images')
+      }
+    } catch (error) {
+      console.error('Error uploading images:', error)
+      alert('Error uploading images')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const removeImage = async (index) => {
+    const imageToRemove = formData.images[index]
+    
+    // For new cars, just remove from local preview
+    if (!car?.id) {
+      setFormData(prev => ({
+        ...prev,
+        images: prev.images.filter((_, i) => i !== index)
+      }))
+      // Adjust current slide if needed
+      if (currentSlide >= formData.images.length - 1) {
+        setCurrentSlide(Math.max(0, formData.images.length - 2))
+      }
+      return
+    }
+    
+    // For existing cars, remove from server
+    try {
+      const response = await fetch(`${API_BASE}/admin/cars/${car.id}/images`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': ADMIN_PASSWORD
+        },
+        body: JSON.stringify({ imageUrl: imageToRemove })
+      })
+
+      const data = await response.json()
+      
+      if (data.success) {
+        setFormData(prev => ({
+          ...prev,
+          images: data.images
+        }))
+        if (currentSlide >= data.images.length) {
+          setCurrentSlide(Math.max(0, data.images.length - 1))
+        }
+      } else {
+        alert(data.message || 'Failed to remove image')
+      }
+    } catch (error) {
+      console.error('Error removing image:', error)
+      alert('Error removing image')
     }
   }
 
@@ -149,6 +234,13 @@ function CarForm({ car, onClose, onSubmit }) {
       const data = await response.json()
       
       if (data.success) {
+        const savedCarId = car?.id || data.id
+        
+        // Upload pending images for new cars
+        if (pendingImages.length > 0) {
+          await uploadImagesToServer(pendingImages, savedCarId)
+        }
+        
         onSubmit()
       } else {
         alert(data.message || 'Failed to save car')
@@ -307,22 +399,24 @@ function CarForm({ car, onClose, onSubmit }) {
               ) : (
                 <div className="no-images">
                   <img src="/favicon.ico" alt="No image" />
-                  <p>Add image URL below</p>
+                  <p>Upload car images below</p>
                 </div>
               )}
             </div>
             
-            {/* Add Image Input */}
+            {/* File Upload */}
             <div className="add-image-row">
               <input
-                type="text"
-                value={newImageUrl}
-                onChange={(e) => setNewImageUrl(e.target.value)}
-                placeholder="Enter URL"
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                accept="image/*"
+                multiple
+                disabled={uploading}
               />
-              <button type="button" onClick={addImage} disabled={!newImageUrl.trim()}>
-                Add Image
-              </button>
+              <span className="upload-status">
+                {uploading ? 'Uploading...' : ''}
+              </span>
             </div>
             
             {/* Image Thumbnails */}

@@ -7,6 +7,15 @@ const ADMIN_PASSWORD = 'tiger2oo8'
 // Helper to format photo URLs for local paths
 const formatPhotoUrl = (url) => {
   if (!url) return null
+  // If it's a blob URL (local preview), return it as-is
+  if (url.startsWith('blob:')) {
+    return url
+  }
+  // If it's already a full URL, use it
+  if (url.startsWith('http')) {
+    return url
+  }
+  // If it's a local path, prepend the server URL
   if (url.startsWith('/')) {
     return `${API_BASE.replace('/api', '')}${url}`
   }
@@ -30,6 +39,13 @@ const DriverPhoto = ({ photoUrl, name }) => {
   const handleLoad = () => {
     setLoading(false)
   }
+  
+  // Update src when photoUrl changes
+  useEffect(() => {
+    setImgSrc(photoUrl)
+    setError(false)
+    setLoading(true)
+  }, [photoUrl])
   
   if (!imgSrc || error) {
     return (

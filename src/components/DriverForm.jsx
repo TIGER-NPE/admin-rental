@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './DriverForm.css'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
@@ -15,7 +15,9 @@ function DriverForm({ driver, onClose, onSubmit }) {
     photo_url: ''
   })
   const [uploading, setUploading] = useState(false)
-  const [urlPreview, setUrlPreview] = useState('')
+  const [photoPreview, setPhotoPreview] = useState('')
+  const [pendingPhoto, setPendingPhoto] = useState(null) // For new drivers before save
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     if (driver) {
@@ -28,16 +30,14 @@ function DriverForm({ driver, onClose, onSubmit }) {
         status: driver.status || 'available',
         photo_url: driver.photo_url || ''
       })
+      if (driver.photo_url) {
+        setPhotoPreview(driver.photo_url)
+      }
     }
   }, [driver])
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    
-    // Update URL preview when photo_url changes
-    if (name === 'photo_url') {
-      setUrlPreview(value)
-    }
     
     // Auto-add +250 to phone number if not present
     if (name === 'phone') {
@@ -51,6 +51,61 @@ function DriverForm({ driver, onClose, onSubmit }) {
     }
   }
 
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    // For existing drivers, upload directly
+    if (driver?.id) {
+      await uploadPhotoToServer(file, driver.id)
+    } else {
+      // For new drivers, create preview URL
+      const previewUrl = URL.createObjectURL(file)
+      setPendingPhoto(file)
+      setPhotoPreview(previewUrl)
+      setFormData(prev => ({ ...prev, photo_url: previewUrl }))
+    }
+    
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const uploadPhotoToServer = async (file, driverId) => {
+    setUploading(true)
+    
+    try {
+      const formDataUpload = new FormData()
+      formDataUpload.append('photo', file)
+
+      const response = await fetch(`${API_BASE}/admin/drivers/${driverId}/photo`, {
+        method: 'POST',
+        headers: {
+          'x-admin-password': ADMIN_PASSWORD
+        },
+        body: formDataUpload
+      })
+
+      const data = await response.json()
+      
+      if (data.success) {
+        setFormData(prev => ({
+          ...prev,
+          photo_url: data.photoUrl
+        }))
+        setPhotoPreview(data.photoUrl)
+      } else {
+        alert(data.message || 'Failed to upload photo')
+      }
+    } catch (error) {
+      console.error('Error uploading photo:', error)
+      alert('Error uploading photo')
+    } finally {
+      setUploading(false)
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setUploading(true)
@@ -58,6 +113,7 @@ function DriverForm({ driver, onClose, onSubmit }) {
     console.log('=== DRIVER FORM DEBUG ===')
     console.log('formData:', formData)
     console.log('photo_url being sent:', formData.photo_url)
+    console.log('pendingPhoto:', pendingPhoto)
     
     try {
       const url = driver 
@@ -81,6 +137,12 @@ function DriverForm({ driver, onClose, onSubmit }) {
       
       if (data.success) {
         console.log('Driver saved successfully!')
+        
+        // Upload pending photo for new drivers
+        if (pendingPhoto && data.id) {
+          await uploadPhotoToServer(pendingPhoto, data.id)
+        }
+        
         onSubmit()
       } else {
         console.error('API Error:', data.message)
@@ -116,23 +178,37 @@ function DriverForm({ driver, onClose, onSubmit }) {
           </div>
           
           <div className="form-group">
-            <label>Photo URL</label>
-            <input
-              type="url"
-              name="photo_url"
-              value={formData.photo_url}
-              onChange={handleChange}
-              placeholder="https://example.com/driver-photo.jpg"
-            />
-            <small>Use images from Google Photos, Imgur, or direct image links. Avoid Facebook/Instagram URLs (CORS blocked).</small>
-            {urlPreview && (
-              <div className="url-preview">
-                <img src={urlPreview} alt="Preview" onError={(e) => {
-                  e.target.style.display='none';
-                  e.target.parentElement.innerHTML = '<span style="color: #e74c3c; font-size: 12px;">⚠️ Image blocked by CORS. Try a different URL.</span>';
-                }} />
-              </div>
-            )}
+            <label>Photo</label>
+            <div className="photo-upload-container">
+              {photoPreview ? (
+                <div className="photo-preview">
+                  <img src={photoPreview} alt="Driver preview" />
+                  <button 
+                    type="button" 
+                    className="remove-photo-btn"
+                    onClick={() => {
+                      setPhotoPreview('')
+                      setPendingPhoto(null)
+                      setFormData(prev => ({ ...prev, photo_url: '' }))
+                    }}
+                  >
+                    &times;
+                  </button>
+                </div>
+              ) : (
+                <div className="photo-placeholder">
+                  <span>No photo</span>
+                </div>
+              )}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileUpload}
+                accept="image/*"
+                disabled={uploading}
+              />
+              {uploading && <span className="upload-status">Uploading...</span>}
+            </div>
           </div>
           
           <div className="form-row">

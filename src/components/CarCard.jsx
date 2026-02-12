@@ -101,12 +101,19 @@ function CarCard({ car, onRent, onClick, selectedDate }) {
     }
   }
 
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+
   const getImageUrl = (url) => {
     if (!url) {
       return '/favicon.ico'
     }
-    if (url.startsWith('/')) {
+    // Handle blob URLs (local preview)
+    if (url.startsWith('blob:')) {
       return url
+    }
+    // Handle local paths
+    if (url.startsWith('/')) {
+      return `${API_BASE.replace('/api', '')}${url}`
     }
     return url
   }

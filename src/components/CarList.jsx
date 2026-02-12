@@ -7,8 +7,17 @@ const ADMIN_PASSWORD = 'tiger2oo8'
 // Helper to format image URLs for local paths
 const formatImageUrl = (url) => {
   if (!url) return '/favicon.ico'
-  if (url.startsWith('/')) {
+  // If it's a blob URL (local preview), return it as-is
+  if (url.startsWith('blob:')) {
     return url
+  }
+  // If it's already a full URL, use it
+  if (url.startsWith('http')) {
+    return url
+  }
+  // If it's a local path, prepend the server URL
+  if (url.startsWith('/')) {
+    return `${API_BASE.replace('/api', '')}${url}`
   }
   return url
 }
