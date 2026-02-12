@@ -217,6 +217,14 @@ function CarForm({ car, onClose, onSubmit }) {
     setSaving(true)
 
     try {
+      // For new cars with blob images, upload images first
+      let finalImages = [...formData.images]
+      if (!car && pendingImages.length > 0) {
+        // Upload blob images first
+        const uploadedUrls = await uploadBlobImagesToServer(pendingImages)
+        finalImages = [...formData.images.filter(img => !img.startsWith('blob:')), ...uploadedUrls]
+      }
+      
       const url = car 
         ? `${API_BASE}/admin/cars/${car.id}`
         : `${API_BASE}/admin/cars`
@@ -228,19 +236,12 @@ function CarForm({ car, onClose, onSubmit }) {
           'Content-Type': 'application/json',
           'x-admin-password': ADMIN_PASSWORD
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, images: finalImages })
       })
 
       const data = await response.json()
       
       if (data.success) {
-        const savedCarId = car?.id || data.id
-        
-        // Upload pending images for new cars
-        if (pendingImages.length > 0) {
-          await uploadImagesToServer(pendingImages, savedCarId)
-        }
-        
         onSubmit()
       } else {
         alert(data.message || 'Failed to save car')
@@ -250,6 +251,76 @@ function CarForm({ car, onClose, onSubmit }) {
       alert('Error saving car')
     } finally {
       setSaving(false)
+    }
+  }
+
+  // Upload blob images to server and return real URLs
+  const uploadBlobImagesToServer = async (blobFiles) => {
+    setUploading(true)
+    try {
+      const formDataUpload = new FormData()
+      blobFiles.forEach(file => {
+        formDataUpload.append('photos', file)
+      })
+
+      // First create a temporary car to get an ID
+      const tempResponse = await fetch(`${API_BASE}/admin/cars`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': ADMIN_PASSWORD
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          model: formData.model,
+          year: formData.year,
+          price_per_day: formData.price_per_day,
+          whatsapp_number: formData.whatsapp_number,
+          description: formData.description,
+          seats: formData.seats,
+          doors: formData.doors,
+          transmission: formData.transmission,
+          images: []
+        })
+      })
+      
+      const tempData = await tempResponse.json()
+      if (!tempData.success) {
+        throw new Error('Failed to create temporary car')
+      }
+      
+      const tempCarId = tempData.id
+      
+      // Now upload images to the temp car
+      const uploadResponse = await fetch(`${API_BASE}/admin/cars/${tempCarId}/images`, {
+        method: 'POST',
+        headers: {
+          'x-admin-password': ADMIN_PASSWORD
+        },
+        body: formDataUpload
+      })
+      
+      const uploadData = await uploadResponse.json()
+      
+      // Delete the temp car (we'll recreate with full data including images)
+      await fetch(`${API_BASE}/admin/cars/${tempCarId}`, {
+        method: 'DELETE',
+        headers: {
+          'x-admin-password': ADMIN_PASSWORD
+        }
+      })
+      
+      if (uploadData.success) {
+        return uploadData.images
+      } else {
+        throw new Error('Failed to upload images')
+      }
+    } catch (error) {
+      console.error('Error uploading blob images:', error)
+      alert('Error uploading images')
+      return []
+    } finally {
+      setUploading(false)
     }
   }
 
