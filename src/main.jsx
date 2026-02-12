@@ -13,10 +13,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <LanguageProvider>
         <Routes>
-          <Route path="/" element={<CarsPage />} />
+          <Route path="/" element={<App />} />
+          <Route path="/cars" element={<CarsPage />} />
           <Route path="/drivers" element={<DriversPage />} />
           <Route path="/terms" element={<TermsPage />} />
-          <Route path="/admin" element={<App />} />
         </Routes>
       </LanguageProvider>
     </BrowserRouter>
