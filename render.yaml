@@ -4,6 +4,9 @@ services:
     env: static
     buildCommand: rm -rf node_modules package-lock.json && npm install --unsafe-perm && npm run build
     staticPublishPath: dist
+    rewrites:
+      - source: /*
+        destination: /index.html
     envVars:
       - key: VITE_API_URL
-        value: https://car-rental-api-pp6g.onrender.com
+        value: https://car-rental-api-pp6g.onrender.com/api
