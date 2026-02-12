@@ -62,9 +62,10 @@ function TermsForm({ term, onClose, onSubmit }) {
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Title *</label>
+            <label htmlFor="term-title">Title *</label>
             <input
               type="text"
+              id="term-title"
               name="title"
               value={formData.title}
               onChange={handleChange}
@@ -74,8 +75,9 @@ function TermsForm({ term, onClose, onSubmit }) {
           </div>
           
           <div className="form-group">
-            <label>Content *</label>
+            <label htmlFor="term-content">Content *</label>
             <textarea
+              id="term-content"
               name="content"
               value={formData.content}
               onChange={handleChange}
@@ -86,9 +88,10 @@ function TermsForm({ term, onClose, onSubmit }) {
           </div>
           
           <div className="form-group">
-            <label>Display Order</label>
+            <label htmlFor="term-order">Display Order</label>
             <input
               type="number"
+              id="term-order"
               name="display_order"
               value={formData.display_order}
               onChange={handleChange}

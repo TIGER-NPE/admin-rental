@@ -154,17 +154,20 @@ function CarCard({ car, onRent, onClick, selectedDate }) {
             
             {hasMultipleImages && (
               <>
-                <button className="slider-arrow prev" onClick={prevSlide}>
+                <button className="slider-arrow prev" onClick={prevSlide} aria-label="Previous image">
                   &#10094;
                 </button>
-                <button className="slider-arrow next" onClick={nextSlide}>
+                <button className="slider-arrow next" onClick={nextSlide} aria-label="Next image">
                   &#10095;
                 </button>
-                <div className="slider-dots">
+                <div className="slider-dots" role="tablist" aria-label="Image navigation">
                   {images.map((_, index) => (
                     <span 
                       key={index} 
                       className={`dot ${index === currentSlide ? 'active' : ''}`}
+                      role="tab"
+                      aria-label={`Go to image ${index + 1}`}
+                      aria-selected={index === currentSlide}
                       onClick={(e) => {
                         e.stopPropagation()
                         setCurrentSlide(index)
@@ -183,6 +186,8 @@ function CarCard({ car, onRent, onClick, selectedDate }) {
           <img 
             src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400" 
             alt={`${car.name} ${car.model}`}
+            width="400"
+            height="200"
           />
         )}
         

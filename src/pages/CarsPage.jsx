@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
-import heroVideo from '../components/WhatsApp Video 2026-01-31 at 21.56.44.mp4'
 import { Link } from 'react-router-dom'
 import '../App.css'
 import CarCard from '../components/CarCard'
 import CarDetailModal from '../components/CarDetailModal'
-import SearchBar from '../components/SearchBar'
 import DatePicker from '../components/DatePicker'
 import LanguageSelector from '../components/LanguageSelector'
 import { useLanguage } from '../context/LanguageContext'
@@ -183,7 +181,7 @@ function CarsPage() {
         <div className="header-content">
           <div className="logo">
             <Link to="/">
-              <img src="/log.png" alt="" className="logo-image" />
+              <img src="/log.png" alt="RentACar Logo" className="logo-image" />
               <span>RentACar</span>
             </Link>
           </div>
@@ -230,14 +228,11 @@ function CarsPage() {
       </header>
 
       <main className="main">
-        {/* Hero Section with Video */}
-        <section className="hero-video">
-          <video autoPlay loop muted playsInline className="hero-video-bg">
-            <source src={heroVideo} type="video/mp4" />
-          </video>
-          <div className="hero-video-overlay">
+        {/* Hero Section */}
+        <section className="hero-section">
+          <div className="hero-content">
             <h1>Find Your Perfect Ride</h1>
-            <p>Browse our selection of quality cars and connect directly with owners via WhatsApp</p>
+            <p>Browse our selection of quality cars and connect directly via WhatsApp</p>
             <div className="hero-stats">
               <div className="stat">
                 <span className="stat-number">{filteredCars.length}+</span>
@@ -247,10 +242,9 @@ function CarsPage() {
           </div>
         </section>
 
-        {/* Search Bar */}
+        {/* Search & Date Picker */}
         <section className="search-section">
           <div className="section-container">
-            <SearchBar onSearch={handleSearch} />
             <div className="date-picker-wrapper">
               <DatePicker 
                 onSelectDates={setSelectedDates}
@@ -267,8 +261,8 @@ function CarsPage() {
           <div className="section-container">
             <div className="filters-bar">
               <div className="filter-group">
-                <label>Price Range</label>
-                <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
+                <label htmlFor="price-range">Price Range</label>
+                <select id="price-range" value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
                   <option value="all">All Prices</option>
                   <option value="0-50000">Under RWF 50,000</option>
                   <option value="50000-100000">RWF 50,000 - 100,000</option>
@@ -277,8 +271,8 @@ function CarsPage() {
                 </select>
               </div>
               <div className="filter-group">
-                <label>Seats</label>
-                <select value={seatsFilter} onChange={(e) => setSeatsFilter(e.target.value)}>
+                <label htmlFor="seats-filter">Seats</label>
+                <select id="seats-filter" value={seatsFilter} onChange={(e) => setSeatsFilter(e.target.value)}>
                   <option value="all">All Seats</option>
                   <option value="2">2 Seats</option>
                   <option value="4">4 Seats</option>
@@ -288,8 +282,8 @@ function CarsPage() {
                 </select>
               </div>
               <div className="filter-group">
-                <label>Transmission</label>
-                <select value={transmissionFilter} onChange={(e) => setTransmissionFilter(e.target.value)}>
+                <label htmlFor="transmission-filter">Transmission</label>
+                <select id="transmission-filter" value={transmissionFilter} onChange={(e) => setTransmissionFilter(e.target.value)}>
                   <option value="all">All Types</option>
                   <option value="Automatic">Automatic</option>
                   <option value="Manual">Manual</option>
@@ -343,7 +337,7 @@ function CarsPage() {
         <div className="footer-content">
           <div className="footer-info">
             <div className="footer-logo">
-              <img src="/log.png" alt="" className="footer-logo-image" />
+              <img src="/log.png" alt="RentACar Logo" className="footer-logo-image" />
               <span>RentACar</span>
             </div>
             <p className="footer-location">

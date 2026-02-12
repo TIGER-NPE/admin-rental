@@ -1,0 +1,506 @@
+1:import { useState, useEffect, useRef } from 'react'
+2:import './CarForm.css'
+4:const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+5:const ADMIN_PASSWORD = 'tiger2oo8'
+7:// Helper to format date for input field (YYYY-MM-DD)
+8:const formatDateForInput = (dateStr) => {
+9:  if (!dateStr) return ''
+10:  // If already in YYYY-MM-DD format, return as-is
+11:  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr
+12:  // Try to parse and format
+13:  const date = new Date(dateStr)
+14:  if (isNaN(date.getTime())) return ''
+15:  return date.toISOString().split('T')[0]
+16:}
+18:function CarForm({ car, onClose, onSubmit }) {
+19:  const [formData, setFormData] = useState({
+20:    name: '',
+21:    model: '',
+22:    year: new Date().getFullYear(),
+23:    price_per_day: '',
+24:    whatsapp_number: '',
+25:    description: '',
+26:    location: '',
+27:    seats: 5,
+28:    doors: 4,
+29:    transmission: 'Automatic',
+30:    available: true,
+31:    start_date: '',
+32:    end_date: '',
+33:    images: []
+34:  })
+35:  const [currentSlide, setCurrentSlide] = useState(0)
+36:  const [saving, setSaving] = useState(false)
+37:  const [uploading, setUploading] = useState(false)
+38:  const [pendingImages, setPendingImages] = useState([]) // For new cars before save
+39:  const fileInputRef = useRef(null)
+41:  useEffect(() => {
+42:    if (car) {
+43:      let carImages = []
+44:      if (car.images) {
+45:        if (Array.isArray(car.images)) {
+46:          carImages = car.images
+47:        } else if (typeof car.images === 'string') {
+48:          try {
+49:            carImages = JSON.parse(car.images)
+50:          } catch {
+51:            carImages = car.images.split(',').map(img => img.trim())
+52:          }
+53:        }
+54:      } else if (car.image_url) {
+55:        carImages = [car.image_url]
+56:      }
+57:      
+58:      setFormData({
+59:        name: car.name || '',
+60:        model: car.model || '',
+61:        year: car.year || new Date().getFullYear(),
+62:        price_per_day: car.price_per_day || '',
+63:        whatsapp_number: car.whatsapp_number || '',
+64:        description: car.description || '',
+65:        location: car.location || '',
+66:        seats: car.seats || 5,
+67:        doors: car.doors || 4,
+68:        transmission: car.transmission || 'Automatic',
+69:        available: car.available !== false,
+70:        start_date: formatDateForInput(car.start_date),
+71:        end_date: formatDateForInput(car.end_date),
+72:        images: carImages
+73:      })
+74:    }
+75:  }, [car])
+77:  const handleChange = (e) => {
+78:    const { name, value, type, checked } = e.target
+79:    
+80:    if (name === 'whatsapp_number') {
+81:      let phone = value.replace(/[^0-9+]/g, '')
+82:      if (phone && !phone.startsWith('+')) {
+83:        phone = '+250' + phone.replace(/^0/, '')
+84:      }
+85:      setFormData(prev => ({
+86:        ...prev,
+87:        [name]: phone
+88:      }))
+89:    } else {
+90:      setFormData(prev => ({
+91:        ...prev,
+92:        [name]: type === 'checkbox' ? checked : value
+93:      }))
+94:    }
+95:  }
+97:  const handleFileUpload = async (e) => {
+98:    const files = Array.from(e.target.files)
+99:    if (files.length === 0) return
+101:    // For existing cars, upload directly
+102:    if (car?.id) {
+103:      await uploadImagesToServer(files, car.id)
+104:    } else {
+105:      // For new cars, create preview URLs
+106:      const newImages = files.map(file => URL.createObjectURL(file))
+107:      setPendingImages(prev => [...prev, ...files])
+108:      setFormData(prev => ({
+109:        ...prev,
+110:        images: [...prev.images, ...newImages]
+111:      }))
+112:      setCurrentSlide(formData.images.length)
+113:    }
+114:    
+115:    // Reset file input
+116:    if (fileInputRef.current) {
+117:      fileInputRef.current.value = ''
+118:    }
+119:  }
+121:  const uploadImagesToServer = async (files, carId) => {
+122:    setUploading(true)
+123:    
+124:    try {
+125:      const formDataUpload = new FormData()
+126:      files.forEach(file => {
+127:        formDataUpload.append('photos', file)
+128:      })
+130:      const response = await fetch(`${API_BASE}/admin/cars/${carId}/images`, {
+131:        method: 'POST',
+132:        headers: {
+133:          'x-admin-password': ADMIN_PASSWORD
+134:        },
+135:        body: formDataUpload
+136:      })
+138:      const data = await response.json()
+139:      
+140:      if (data.success) {
+141:        setFormData(prev => ({
+142:          ...prev,
+143:          images: data.images
+144:        }))
+145:        setCurrentSlide(data.images.length - 1)
+146:      } else {
+147:        alert(data.message || 'Failed to upload images')
+148:      }
+149:    } catch (error) {
+150:      console.error('Error uploading images:', error)
+151:      alert('Error uploading images')
+152:    } finally {
+153:      setUploading(false)
+154:    }
+155:  }
+157:  const removeImage = async (index) => {
+158:    const imageToRemove = formData.images[index]
+159:    
+160:    // For new cars, just remove from local preview
+161:    if (!car?.id) {
+162:      setFormData(prev => ({
+163:        ...prev,
+164:        images: prev.images.filter((_, i) => i !== index)
+165:      }))
+166:      // Adjust current slide if needed
+167:      if (currentSlide >= formData.images.length - 1) {
+168:        setCurrentSlide(Math.max(0, formData.images.length - 2))
+169:      }
+170:      return
+171:    }
+172:    
+173:    // For existing cars, remove from server
+174:    try {
+175:      const response = await fetch(`${API_BASE}/admin/cars/${car.id}/images`, {
+176:        method: 'DELETE',
+177:        headers: {
+178:          'Content-Type': 'application/json',
+179:          'x-admin-password': ADMIN_PASSWORD
+180:        },
+181:        body: JSON.stringify({ imageUrl: imageToRemove })
+182:      })
+184:      const data = await response.json()
+185:      
+186:      if (data.success) {
+187:        setFormData(prev => ({
+188:          ...prev,
+189:          images: data.images
+190:        }))
+191:        if (currentSlide >= data.images.length) {
+192:          setCurrentSlide(Math.max(0, data.images.length - 1))
+193:        }
+194:      } else {
+195:        alert(data.message || 'Failed to remove image')
+196:      }
+197:    } catch (error) {
+198:      console.error('Error removing image:', error)
+199:      alert('Error removing image')
+200:    }
+201:  }
+203:  const nextSlide = () => {
+204:    if (formData.images.length > 0) {
+205:      setCurrentSlide(prev => (prev + 1) % formData.images.length)
+206:    }
+207:  }
+209:  const prevSlide = () => {
+210:    if (formData.images.length > 0) {
+211:      setCurrentSlide(prev => (prev - 1 + formData.images.length) % formData.images.length)
+212:    }
+213:  }
+215:  const handleSubmit = async (e) => {
+216:    e.preventDefault()
+217:    setSaving(true)
+219:    try {
+220:      const url = car 
+221:        ? `${API_BASE}/admin/cars/${car.id}`
+222:        : `${API_BASE}/admin/cars`
+223:      const method = car ? 'PUT' : 'POST'
+225:      const response = await fetch(url, {
+226:        method,
+227:        headers: {
+228:          'Content-Type': 'application/json',
+229:          'x-admin-password': ADMIN_PASSWORD
+230:        },
+231:        body: JSON.stringify(formData)
+232:      })
+234:      const data = await response.json()
+235:      
+236:      if (data.success) {
+237:        const savedCarId = car?.id || data.id
+238:        
+239:        // Upload pending images for new cars
+240:        if (pendingImages.length > 0) {
+241:          await uploadImagesToServer(pendingImages, savedCarId)
+242:        }
+243:        
+244:        onSubmit()
+245:      } else {
+246:        alert(data.message || 'Failed to save car')
+247:      }
+248:    } catch (error) {
+249:      console.error('Error saving car:', error)
+250:      alert('Error saving car')
+251:    } finally {
+252:      setSaving(false)
+253:    }
+254:  }
+256:  return (
+257:    <div className="modal-overlay" onClick={onClose}>
+258:      <div className="modal car-form-modal" onClick={e => e.stopPropagation()}>
+259:        <button className="modal-close" onClick={onClose}>&times;</button>
+260:        <h2>{car ? 'Edit Car' : 'Add New Car'}</h2>
+261:        
+262:        <form onSubmit={handleSubmit}>
+263:          <div className="form-row">
+264:            <div className="form-group">
+265:              <label htmlFor="name">Car Name *</label>
+266:              <input
+267:                type="text"
+268:                id="name"
+269:                name="name"
+270:                value={formData.name}
+271:                onChange={handleChange}
+272:                placeholder="e.g., Toyota"
+273:                required
+274:              />
+275:            </div>
+276:            <div className="form-group">
+277:              <label htmlFor="model">Model *</label>
+278:              <input
+279:                type="text"
+280:                id="model"
+281:                name="model"
+282:                value={formData.model}
+283:                onChange={handleChange}
+284:                placeholder="e.g., Corolla"
+285:                required
+286:              />
+287:            </div>
+288:          </div>
+290:          <div className="form-row">
+291:            <div className="form-group">
+292:              <label htmlFor="year">Year *</label>
+293:              <input
+294:                type="number"
+295:                id="year"
+296:                name="year"
+297:                value={formData.year}
+298:                onChange={handleChange}
+299:                min="2000"
+300:                max="2030"
+301:                required
+302:              />
+303:            </div>
+304:            <div className="form-group">
+305:              <label htmlFor="price_per_day">Price/Day (RWF) *</label>
+306:              <input
+307:                type="number"
+308:                id="price_per_day"
+309:                name="price_per_day"
+310:                value={formData.price_per_day}
+311:                onChange={handleChange}
+312:                min="0"
+313:                placeholder="45000"
+314:                required
+315:              />
+316:            </div>
+317:          </div>
+319:          <div className="form-row">
+320:            <div className="form-group">
+321:              <label htmlFor="seats">Seats</label>
+322:              <select id="seats" name="seats" value={formData.seats} onChange={handleChange}>
+323:                <option value="2">2 Seats</option>
+324:                <option value="4">4 Seats</option>
+325:                <option value="5">5 Seats</option>
+326:                <option value="7">7 Seats</option>
+327:                <option value="8">8 Seats</option>
+328:              </select>
+329:            </div>
+330:            <div className="form-group">
+331:              <label htmlFor="doors">Doors</label>
+332:              <select id="doors" name="doors" value={formData.doors} onChange={handleChange}>
+333:                <option value="3">3 Doors</option>
+334:                <option value="4">4 Doors</option>
+335:                <option value="5">5 Doors</option>
+336:              </select>
+337:            </div>
+338:          </div>
+340:          <div className="form-row">
+341:            <div className="form-group">
+342:              <label htmlFor="transmission">Transmission</label>
+343:              <select id="transmission" name="transmission" value={formData.transmission} onChange={handleChange}>
+344:                <option value="Automatic">Automatic</option>
+345:                <option value="Manual">Manual</option>
+346:              </select>
+347:            </div>
+348:            <div className="form-group">
+349:              <label htmlFor="location">Location</label>
+350:              <input
+351:                type="text"
+352:                id="location"
+353:                name="location"
+354:                value={formData.location}
+355:                onChange={handleChange}
+356:                placeholder="e.g., Kigali, Rwanda"
+357:              />
+358:            </div>
+359:          </div>
+361:          <div className="form-group">
+362:            <label htmlFor="whatsapp_number">WhatsApp Number *</label>
+363:            <input
+364:              type="text"
+365:              id="whatsapp_number"
+366:              name="whatsapp_number"
+367:              value={formData.whatsapp_number}
+368:              onChange={handleChange}
+369:              placeholder="e.g., +250788123456"
+370:              required
+371:            />
+372:          </div>
+374:          <div className="form-group">
+375:            <label>Car Images</label>
+376:            
+377:            {/* Image Slider */}
+378:            <div className="image-slider-container">
+379:              {formData.images.length > 0 ? (
+380:                <div className="image-slider">
+381:                  <button type="button" className="slider-btn prev" onClick={prevSlide} disabled={formData.images.length <= 1} aria-label="Previous image">
+382:                    &#10094;
+383:                  </button>
+384:                  <div className="slider-content">
+385:                    <img 
+386:                      src={formData.images[currentSlide]} 
+387:                      alt={`Car image ${currentSlide + 1}`}
+388:                      className="slider-image"
+389:                    />
+390:                    <div className="slider-indicator">
+391:                      {currentSlide + 1} / {formData.images.length}
+392:                    </div>
+393:                    <button 
+394:                      type="button" 
+395:                      className="remove-image-btn"
+396:                      onClick={() => removeImage(currentSlide)}
+397:                      aria-label="Remove current image"
+398:                    >
+399:                      Remove
+400:                    </button>
+401:                  </div>
+402:                  <button type="button" className="slider-btn next" onClick={nextSlide} disabled={formData.images.length <= 1} aria-label="Next image">
+403:                    &#10095;
+404:                  </button>
+405:                </div>
+406:              ) : (
+407:                <div className="no-images">
+408:                  <img src="/favicon.ico" alt="No image" />
+409:                  <p>Upload car images below</p>
+410:                </div>
+411:              )}
+412:            </div>
+413:            
+414:            {/* File Upload */}
+415:            <div className="add-image-row">
+416:              <label htmlFor="image-upload" className="sr-only">Upload car images</label>
+417:              <input
+418:                type="file"
+419:                id="image-upload"
+420:                ref={fileInputRef}
+421:                onChange={handleFileUpload}
+422:                accept="image/*"
+423:                multiple
+424:                disabled={uploading}
+425:              />
+426:              <span className="upload-status">
+427:                {uploading ? 'Uploading...' : ''}
+428:              </span>
+429:            </div>
+430:            
+431:            {/* Image Thumbnails */}
+432:            {formData.images.length > 0 && (
+433:              <div className="image-thumbnails">
+434:                {formData.images.map((url, index) => (
+435:                  <div 
+436:                    key={index} 
+437:                    className={`thumbnail ${index === currentSlide ? 'active' : ''}`}
+438:                    onClick={() => setCurrentSlide(index)}
+439:                  >
+440:                    <img src={url} alt={`Thumbnail ${index + 1}`} />
+441:                  </div>
+442:                ))}
+443:              </div>
+444:            )}
+445:          </div>
+447:          <div className="form-group">
+448:            <label htmlFor="description">Description</label>
+449:            <textarea
+450:              id="description"
+451:              name="description"
+452:              value={formData.description}
+453:              onChange={handleChange}
+454:              placeholder="Brief description of the car"
+455:              rows="3"
+456:            />
+457:          </div>
+459:          <div className="form-group status-toggle">
+460:            <label className="status-label">
+461:              <span className="status-text">Status</span>
+462:              <div className="toggle-wrapper">
+463:                <input
+464:                  type="checkbox"
+465:                  name="available"
+466:                  id="available"
+467:                  checked={formData.available}
+468:                  onChange={handleChange}
+469:                />
+470:                <label htmlFor="available" className="toggle-switch">
+471:                  <span className={`toggle-slider ${formData.available ? 'available' : 'unavailable'}`}></span>
+472:                </label>
+473:                <span className={`status-badge ${formData.available ? 'available' : 'unavailable'}`}>
+474:                  {formData.available ? 'Available' : 'Unavailable'}
+475:                </span>
+476:              </div>
+477:            </label>
+478:            <p className="status-hint">
+479:              {formData.available 
+480:                ? 'Car will be visible to customers' 
+481:                : 'Car will be hidden from customers'}
+482:            </p>
+483:          </div>
+485:          <div className="form-group availability-dates">
+486:            <label>Availability Dates (Optional)</label>
+487:            <p className="date-hint">Set the date range when this car is available for rent. Cars will only be shown as available if the selected date falls within this range.</p>
+488:            <div className="date-inputs-row">
+489:              <div className="date-input-group">
+490:                <label htmlFor="start_date">Start Date</label>
+491:                <input
+492:                  type="date"
+493:                  name="start_date"
+494:                  id="start_date"
+495:                  value={formData.start_date}
+496:                  onChange={handleChange}
+497:                />
+498:              </div>
+499:              <div className="date-input-group">
+500:                <label htmlFor="end_date">End Date</label>
+501:                <input
+502:                  type="date"
+503:                  name="end_date"
+504:                  id="end_date"
+505:                  value={formData.end_date}
+506:                  onChange={handleChange}
+507:                />
+508:              </div>
+509:            </div>
+510:            {(formData.start_date || formData.end_date) && (
+511:              <button 
+512:                type="button" 
+513:                className="clear-dates-btn"
+514:                onClick={() => setFormData(prev => ({ ...prev, start_date: '', end_date: '' }))}
+515:              >
+516:                Clear Dates
+517:              </button>
+518:            )}
+519:          </div>
+521:          <div className="modal-actions">
+522:            <button type="button" className="btn btn-cancel" onClick={onClose}>
+523:              Cancel
+524:            </button>
+525:            <button type="submit" className="btn" disabled={saving}>
+526:              {saving ? 'Saving...' : (car ? 'Update Car' : 'Add Car')}
+527:            </button>
+528:          </div>
+529:        </form>
+530:      </div>
+531:    </div>
+532:  )
+533:}
+535:export default CarForm

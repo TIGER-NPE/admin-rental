@@ -139,7 +139,7 @@ function TermsPage() {
       <header className="header">
         <div className="header-content">
           <Link to="/" className="logo">
-            <img src="/log.png" alt="" className="logo-image" />
+            <img src="/log.png" alt="RentACar Logo" className="logo-image" />
             <span>RentACar</span>
           </Link>
           <nav className={`header-nav ${mobileMenuOpen ? 'open' : ''}`}>
@@ -251,7 +251,7 @@ function TermsPage() {
         <div className="footer-content">
           <div className="footer-info">
             <div className="footer-logo">
-              <img src="/log.png" alt="" className="footer-logo-image" />
+              <img src="/log.png" alt="RentACar Logo" className="footer-logo-image" />
               <span>RentACar</span>
             </div>
             <p className="footer-location">

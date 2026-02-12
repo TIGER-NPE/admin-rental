@@ -166,9 +166,10 @@ function DriverForm({ driver, onClose, onSubmit }) {
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Name *</label>
+            <label htmlFor="driver-name">Name *</label>
             <input
               type="text"
+              id="driver-name"
               name="name"
               value={formData.name}
               onChange={handleChange}
@@ -178,7 +179,7 @@ function DriverForm({ driver, onClose, onSubmit }) {
           </div>
           
           <div className="form-group">
-            <label>Photo</label>
+            <label htmlFor="driver-photo">Photo</label>
             <div className="photo-upload-container">
               {photoPreview ? (
                 <div className="photo-preview">
@@ -191,6 +192,7 @@ function DriverForm({ driver, onClose, onSubmit }) {
                       setPendingPhoto(null)
                       setFormData(prev => ({ ...prev, photo_url: '' }))
                     }}
+                    aria-label="Remove driver photo"
                   >
                     &times;
                   </button>
@@ -202,6 +204,7 @@ function DriverForm({ driver, onClose, onSubmit }) {
               )}
               <input
                 type="file"
+                id="driver-photo"
                 ref={fileInputRef}
                 onChange={handleFileUpload}
                 accept="image/*"
@@ -213,9 +216,10 @@ function DriverForm({ driver, onClose, onSubmit }) {
           
           <div className="form-row">
             <div className="form-group">
-              <label>Phone *</label>
+              <label htmlFor="driver-phone">Phone *</label>
               <input
                 type="text"
+                id="driver-phone"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
@@ -225,9 +229,10 @@ function DriverForm({ driver, onClose, onSubmit }) {
             </div>
             
             <div className="form-group">
-              <label>Email</label>
+              <label htmlFor="driver-email">Email</label>
               <input
                 type="email"
+                id="driver-email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
@@ -238,9 +243,10 @@ function DriverForm({ driver, onClose, onSubmit }) {
           
           <div className="form-row">
             <div className="form-group">
-              <label>License Number</label>
+              <label htmlFor="driver-license">License Number</label>
               <input
                 type="text"
+                id="driver-license"
                 name="license_number"
                 value={formData.license_number}
                 onChange={handleChange}
@@ -249,9 +255,10 @@ function DriverForm({ driver, onClose, onSubmit }) {
             </div>
             
             <div className="form-group">
-              <label>Vehicle Assigned</label>
+              <label htmlFor="driver-vehicle">Vehicle Assigned</label>
               <input
                 type="text"
+                id="driver-vehicle"
                 name="vehicle_assigned"
                 value={formData.vehicle_assigned}
                 onChange={handleChange}
@@ -261,8 +268,8 @@ function DriverForm({ driver, onClose, onSubmit }) {
           </div>
           
           <div className="form-group">
-            <label>Status</label>
-            <select name="status" value={formData.status} onChange={handleChange}>
+            <label htmlFor="driver-status">Status</label>
+            <select id="driver-status" name="status" value={formData.status} onChange={handleChange}>
               <option value="available">Available</option>
               <option value="busy">Busy</option>
               <option value="offline">Offline</option>

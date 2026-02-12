@@ -170,16 +170,18 @@ function CarList({ onEdit, refreshKey }) {
                             <button 
                               className="slide-btn prev"
                               onClick={() => prevSlide(car.id, images.length)}
+                              aria-label="Previous image"
                             >
                               &#10094;
                             </button>
                             <button 
                               className="slide-btn next"
                               onClick={() => nextSlide(car.id, images.length)}
+                              aria-label="Next image"
                             >
                               &#10095;
                             </button>
-                            <div className="slide-indicator">
+                            <div className="slide-indicator" aria-hidden="true">
                               {slide + 1}/{images.length}
                             </div>
                           </>

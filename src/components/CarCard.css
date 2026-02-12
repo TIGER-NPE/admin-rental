@@ -5,6 +5,7 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
+  will-change: transform, box-shadow;
 }
 
 .car-card:hover {
@@ -32,6 +33,7 @@
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease, filter 0.3s ease;
+  will-change: transform, filter;
 }
 
 .car-card:hover .car-image img {

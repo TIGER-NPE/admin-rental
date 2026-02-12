@@ -87,7 +87,7 @@ function App() {
       <header className="admin-header">
         <div className="header-content">
           <div className="logo">
-            <img src="/logo.svg" alt="" className="logo-image" />
+            <img src="/logo.svg" alt="RentACar Admin Logo" className="logo-image" />
             <span className="logo-text">RentACar Admin</span>
           </div>
         </div>

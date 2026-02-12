@@ -157,8 +157,8 @@ function CarForm({ car, onClose, onSubmit }) {
   const removeImage = async (index) => {
     const imageToRemove = formData.images[index]
     
-    // For new cars, just remove from local preview
-    if (!car?.id) {
+    // For new cars or blob URLs (local preview), just remove from local preview
+    if (!car?.id || imageToRemove.startsWith('blob:')) {
       setFormData(prev => ({
         ...prev,
         images: prev.images.filter((_, i) => i !== index)
@@ -262,9 +262,10 @@ function CarForm({ car, onClose, onSubmit }) {
         <form onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group">
-              <label>Car Name *</label>
+              <label htmlFor="name">Car Name *</label>
               <input
                 type="text"
+                id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
@@ -273,9 +274,10 @@ function CarForm({ car, onClose, onSubmit }) {
               />
             </div>
             <div className="form-group">
-              <label>Model *</label>
+              <label htmlFor="model">Model *</label>
               <input
                 type="text"
+                id="model"
                 name="model"
                 value={formData.model}
                 onChange={handleChange}
@@ -287,9 +289,10 @@ function CarForm({ car, onClose, onSubmit }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Year *</label>
+              <label htmlFor="year">Year *</label>
               <input
                 type="number"
+                id="year"
                 name="year"
                 value={formData.year}
                 onChange={handleChange}
@@ -299,9 +302,10 @@ function CarForm({ car, onClose, onSubmit }) {
               />
             </div>
             <div className="form-group">
-              <label>Price/Day (RWF) *</label>
+              <label htmlFor="price_per_day">Price/Day (RWF) *</label>
               <input
                 type="number"
+                id="price_per_day"
                 name="price_per_day"
                 value={formData.price_per_day}
                 onChange={handleChange}
@@ -314,8 +318,8 @@ function CarForm({ car, onClose, onSubmit }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Seats</label>
-              <select name="seats" value={formData.seats} onChange={handleChange}>
+              <label htmlFor="seats">Seats</label>
+              <select id="seats" name="seats" value={formData.seats} onChange={handleChange}>
                 <option value="2">2 Seats</option>
                 <option value="4">4 Seats</option>
                 <option value="5">5 Seats</option>
@@ -324,8 +328,8 @@ function CarForm({ car, onClose, onSubmit }) {
               </select>
             </div>
             <div className="form-group">
-              <label>Doors</label>
-              <select name="doors" value={formData.doors} onChange={handleChange}>
+              <label htmlFor="doors">Doors</label>
+              <select id="doors" name="doors" value={formData.doors} onChange={handleChange}>
                 <option value="3">3 Doors</option>
                 <option value="4">4 Doors</option>
                 <option value="5">5 Doors</option>
@@ -335,16 +339,17 @@ function CarForm({ car, onClose, onSubmit }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label>Transmission</label>
-              <select name="transmission" value={formData.transmission} onChange={handleChange}>
+              <label htmlFor="transmission">Transmission</label>
+              <select id="transmission" name="transmission" value={formData.transmission} onChange={handleChange}>
                 <option value="Automatic">Automatic</option>
                 <option value="Manual">Manual</option>
               </select>
             </div>
             <div className="form-group">
-              <label>Location</label>
+              <label htmlFor="location">Location</label>
               <input
                 type="text"
+                id="location"
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
@@ -354,9 +359,10 @@ function CarForm({ car, onClose, onSubmit }) {
           </div>
 
           <div className="form-group">
-            <label>WhatsApp Number *</label>
+            <label htmlFor="whatsapp_number">WhatsApp Number *</label>
             <input
               type="text"
+              id="whatsapp_number"
               name="whatsapp_number"
               value={formData.whatsapp_number}
               onChange={handleChange}
@@ -372,13 +378,13 @@ function CarForm({ car, onClose, onSubmit }) {
             <div className="image-slider-container">
               {formData.images.length > 0 ? (
                 <div className="image-slider">
-                  <button type="button" className="slider-btn prev" onClick={prevSlide} disabled={formData.images.length <= 1}>
+                  <button type="button" className="slider-btn prev" onClick={prevSlide} disabled={formData.images.length <= 1} aria-label="Previous image">
                     &#10094;
                   </button>
                   <div className="slider-content">
                     <img 
                       src={formData.images[currentSlide]} 
-                      alt={`Car ${currentSlide + 1}`}
+                      alt={`Car image ${currentSlide + 1}`}
                       className="slider-image"
                     />
                     <div className="slider-indicator">
@@ -388,11 +394,12 @@ function CarForm({ car, onClose, onSubmit }) {
                       type="button" 
                       className="remove-image-btn"
                       onClick={() => removeImage(currentSlide)}
+                      aria-label="Remove current image"
                     >
                       Remove
                     </button>
                   </div>
-                  <button type="button" className="slider-btn next" onClick={nextSlide} disabled={formData.images.length <= 1}>
+                  <button type="button" className="slider-btn next" onClick={nextSlide} disabled={formData.images.length <= 1} aria-label="Next image">
                     &#10095;
                   </button>
                 </div>
@@ -406,8 +413,10 @@ function CarForm({ car, onClose, onSubmit }) {
             
             {/* File Upload */}
             <div className="add-image-row">
+              <label htmlFor="image-upload" className="sr-only">Upload car images</label>
               <input
                 type="file"
+                id="image-upload"
                 ref={fileInputRef}
                 onChange={handleFileUpload}
                 accept="image/*"
@@ -436,8 +445,9 @@ function CarForm({ car, onClose, onSubmit }) {
           </div>
 
           <div className="form-group">
-            <label>Description</label>
+            <label htmlFor="description">Description</label>
             <textarea
+              id="description"
               name="description"
               value={formData.description}
               onChange={handleChange}
