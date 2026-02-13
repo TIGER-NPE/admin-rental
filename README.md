@@ -1,47 +1,147 @@
-# RentACar Admin Panel
+# Car Rental Platform
 
-Separate admin panel for managing car listings in the RentACar platform.
+A full-stack car rental platform with React frontend and Node.js/Express backend.
 
-## Setup
+## Features
+
+- Browse available cars with filters (price, seats, transmission)
+- Check availability by selecting pickup date
+- Book cars via WhatsApp
+- Admin panel to manage cars, drivers, and terms
+- Availability date range for cars
+- Multi-language support
+
+## Tech Stack
+
+- **Frontend**: React + Vite
+- **Backend**: Node.js + Express
+- **Database**: MySQL
+- **File Upload**: Multer
+
+## Setup Instructions
+
+### 1. Install Dependencies
 
 ```bash
-cd admin
+# Install root dependencies
 npm install
+
+# Install admin dependencies
+cd admin && npm install && cd ..
 ```
 
-## Configuration
+### 2. Configure Environment
 
-Create a `.env` file in this directory:
+Copy `.env.example` to `.env` and configure your settings:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your database credentials:
 
 ```env
-VITE_API_URL=http://localhost:3000/api
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=car_rental
+PORT=3000
+ADMIN_PASSWORD=admin123
 ```
 
-## Development
+### 3. Setup Database
+
+Create the database and tables:
 
 ```bash
-npm run dev
+# Login to MySQL
+mysql -u root -p
+
+# Create database
+CREATE DATABASE car_rental;
+
+# Use the database
+USE car_rental;
+
+# Run the schema (copy content from config/schema.sql)
 ```
 
-The admin panel will be available at http://localhost:5174
+Or import the schema file:
 
-## Production Build
+```bash
+mysql -u root -p car_rental < config/schema.sql
+```
+
+### 4. Build the Frontend
 
 ```bash
 npm run build
 ```
 
-The built files will be in the `dist` folder, which can be deployed to any static hosting service (Netlify, Vercel, etc.)
+This creates the `dist` folder with the compiled frontend.
 
-## API Connection
+### 5. Start the Server
 
-The admin panel connects to the main API server at `http://localhost:3000/api` by default. Configure the `VITE_API_URL` environment variable to point to your production API server.
+```bash
+# Development mode
+npm run server
 
-## Features
+# Production mode (after building)
+npm start
+```
 
-- Login with admin password
-- Add new cars with all details
-- Edit existing car information
-- Delete cars from the database
-- Toggle car availability
-- View all cars in a table format
+The server will run on http://localhost:3000
+
+### 6. Access the Application
+
+- **Frontend**: http://localhost:3000
+- **Admin Panel**: http://localhost:3000/admin.html
+- **Admin Password**: `admin123` (or as set in .env)
+
+## API Endpoints
+
+### Public API
+- `GET /api/cars` - Get all cars
+- `GET /api/cars/:id` - Get single car
+- `GET /api/cars/search/:query` - Search cars
+- `GET /api/cars/:id/whatsapp` - Get WhatsApp URL
+- `GET /api/drivers/available` - Get available drivers
+- `GET /api/terms` - Get terms and policies
+
+### Admin API (requires `x-admin-password` header)
+- `GET /api/admin/cars` - Get all cars
+- `POST /api/admin/cars` - Add new car
+- `PUT /api/admin/cars/:id` - Update car
+- `DELETE /api/admin/cars/:id` - Delete car
+- `POST /api/admin/cars/:id/photo` - Upload car photo
+- `GET /api/admin/drivers` - Get all drivers
+- `POST /api/admin/drivers` - Add driver
+- `PUT /api/admin/drivers/:id` - Update driver
+- `DELETE /api/admin/drivers/:id` - Delete driver
+- `GET /api/admin/terms` - Get all terms
+- `POST /api/admin/terms` - Add term
+- `PUT /api/admin/terms/:id` - Update term
+- `DELETE /api/admin/terms/:id` - Delete term
+- `POST /api/admin/verify` - Verify admin password
+
+## Availability Dates
+
+Cars can have optional availability dates set in the admin panel:
+- **Start Date**: The date from which the car becomes available
+- **End Date**: The date until which the car is available
+
+Cars will only be shown as available if the selected pickup date falls within this range.
+
+## Production Hosting
+
+For production hosting:
+
+1. Set up a MySQL database on your hosting provider
+2. Update `.env` with production database credentials
+3. Build the frontend: `npm run build`
+4. Start the server: `npm start`
+5. Use a process manager like PM2: `pm2 start server.js`
+
+## License
+
+MIT

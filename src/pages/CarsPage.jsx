@@ -1,13 +1,25 @@
 import { useState, useEffect } from 'react'
+<<<<<<< HEAD
+=======
+import heroVideo from '../components/WhatsApp Video 2026-01-31 at 21.56.44.mp4'
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
 import { Link } from 'react-router-dom'
 import '../App.css'
 import CarCard from '../components/CarCard'
 import CarDetailModal from '../components/CarDetailModal'
+<<<<<<< HEAD
+=======
+import SearchBar from '../components/SearchBar'
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
 import DatePicker from '../components/DatePicker'
 import LanguageSelector from '../components/LanguageSelector'
 import { useLanguage } from '../context/LanguageContext'
 
+<<<<<<< HEAD
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
+=======
+const API_BASE = 'https://car-rental-api-pp6g.onrender.com/api'
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
 
 function CarsPage() {
   const { t } = useLanguage()
@@ -181,7 +193,11 @@ function CarsPage() {
         <div className="header-content">
           <div className="logo">
             <Link to="/">
+<<<<<<< HEAD
               <img src="/log.png" alt="RentACar Logo" className="logo-image" />
+=======
+              <img src="/log.png" alt="" className="logo-image" />
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
               <span>RentACar</span>
             </Link>
           </div>
@@ -228,11 +244,22 @@ function CarsPage() {
       </header>
 
       <main className="main">
+<<<<<<< HEAD
         {/* Hero Section */}
         <section className="hero-section">
           <div className="hero-content">
             <h1>Find Your Perfect Ride</h1>
             <p>Browse our selection of quality cars and connect directly via WhatsApp</p>
+=======
+        {/* Hero Section with Video */}
+        <section className="hero-video">
+          <video autoPlay loop muted playsInline className="hero-video-bg">
+            <source src={heroVideo} type="video/mp4" />
+          </video>
+          <div className="hero-video-overlay">
+            <h1>Find Your Perfect Ride</h1>
+            <p>Browse our selection of quality cars and connect directly with owners via WhatsApp</p>
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
             <div className="hero-stats">
               <div className="stat">
                 <span className="stat-number">{filteredCars.length}+</span>
@@ -242,9 +269,16 @@ function CarsPage() {
           </div>
         </section>
 
+<<<<<<< HEAD
         {/* Search & Date Picker */}
         <section className="search-section">
           <div className="section-container">
+=======
+        {/* Search Bar */}
+        <section className="search-section">
+          <div className="section-container">
+            <SearchBar onSearch={handleSearch} />
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
             <div className="date-picker-wrapper">
               <DatePicker 
                 onSelectDates={setSelectedDates}
@@ -261,8 +295,13 @@ function CarsPage() {
           <div className="section-container">
             <div className="filters-bar">
               <div className="filter-group">
+<<<<<<< HEAD
                 <label htmlFor="price-range">Price Range</label>
                 <select id="price-range" value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
+=======
+                <label>Price Range</label>
+                <select value={priceRange} onChange={(e) => setPriceRange(e.target.value)}>
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
                   <option value="all">All Prices</option>
                   <option value="0-50000">Under RWF 50,000</option>
                   <option value="50000-100000">RWF 50,000 - 100,000</option>
@@ -271,8 +310,13 @@ function CarsPage() {
                 </select>
               </div>
               <div className="filter-group">
+<<<<<<< HEAD
                 <label htmlFor="seats-filter">Seats</label>
                 <select id="seats-filter" value={seatsFilter} onChange={(e) => setSeatsFilter(e.target.value)}>
+=======
+                <label>Seats</label>
+                <select value={seatsFilter} onChange={(e) => setSeatsFilter(e.target.value)}>
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
                   <option value="all">All Seats</option>
                   <option value="2">2 Seats</option>
                   <option value="4">4 Seats</option>
@@ -282,8 +326,13 @@ function CarsPage() {
                 </select>
               </div>
               <div className="filter-group">
+<<<<<<< HEAD
                 <label htmlFor="transmission-filter">Transmission</label>
                 <select id="transmission-filter" value={transmissionFilter} onChange={(e) => setTransmissionFilter(e.target.value)}>
+=======
+                <label>Transmission</label>
+                <select value={transmissionFilter} onChange={(e) => setTransmissionFilter(e.target.value)}>
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
                   <option value="all">All Types</option>
                   <option value="Automatic">Automatic</option>
                   <option value="Manual">Manual</option>
@@ -337,7 +386,11 @@ function CarsPage() {
         <div className="footer-content">
           <div className="footer-info">
             <div className="footer-logo">
+<<<<<<< HEAD
               <img src="/log.png" alt="RentACar Logo" className="footer-logo-image" />
+=======
+              <img src="/log.png" alt="" className="footer-logo-image" />
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
               <span>RentACar</span>
             </div>
             <p className="footer-location">

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -44,5 +45,22 @@ export default defineConfig(({ mode }) => {
     define: {
       'import.meta.env.VITE_API_URL': JSON.stringify(apiUrl)
     }
+=======
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  base: './',
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': 'http://localhost:3000'
+    }
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
   }
 })

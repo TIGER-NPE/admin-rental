@@ -4,7 +4,11 @@ import './TermsPage.css'
 import LanguageSelector from '../components/LanguageSelector'
 import { useLanguage } from '../context/LanguageContext'
 
+<<<<<<< HEAD
 const API_BASE = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://car-rental-api-pp6g.onrender.com' : 'http://localhost:3000')
+=======
+const API_BASE = '/api'
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
 
 // FAQ Section - Most common questions
 const FAQS = [
@@ -139,7 +143,11 @@ function TermsPage() {
       <header className="header">
         <div className="header-content">
           <Link to="/" className="logo">
+<<<<<<< HEAD
             <img src="/log.png" alt="RentACar Logo" className="logo-image" />
+=======
+            <img src="/log.png" alt="" className="logo-image" />
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
             <span>RentACar</span>
           </Link>
           <nav className={`header-nav ${mobileMenuOpen ? 'open' : ''}`}>
@@ -251,7 +259,11 @@ function TermsPage() {
         <div className="footer-content">
           <div className="footer-info">
             <div className="footer-logo">
+<<<<<<< HEAD
               <img src="/log.png" alt="RentACar Logo" className="footer-logo-image" />
+=======
+              <img src="/log.png" alt="" className="footer-logo-image" />
+>>>>>>> ff7160f1171aed3e542b433584147108eec8dd13
               <span>RentACar</span>
             </div>
             <p className="footer-location">

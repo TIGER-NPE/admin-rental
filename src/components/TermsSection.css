@@ -1,0 +1,164 @@
+.terms-section {
+  background: #f8fafc;
+  padding: 60px 20px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.terms-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.terms-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.terms-header h2 {
+  font-size: 2rem;
+  color: #1a1a2e;
+  margin: 0 0 12px 0;
+}
+
+.terms-header p {
+  color: #666;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.terms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.term-item {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.term-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.term-item.expanded {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+
+.term-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #fff;
+  transition: background 0.2s;
+}
+
+.term-item:hover .term-title {
+  background: #fafafa;
+}
+
+.term-title h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.term-item:hover .toggle-icon {
+  background: #25D366;
+  color: #fff;
+}
+
+.term-content {
+  padding: 0 20px 20px 20px;
+  border-top: 1px solid #f0f0f0;
+  background: #fafafa;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.term-content p {
+  margin: 8px 0;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.term-content p:first-child {
+  margin-top: 16px;
+}
+
+.term-content p:last-child {
+  margin-bottom: 0;
+}
+
+.terms-section .loading {
+  text-align: center;
+  padding: 40px;
+}
+
+.terms-section .spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f0f0f0;
+  border-top-color: #25D366;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.terms-section .loading p {
+  color: #666;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .terms-section {
+    padding: 40px 16px;
+  }
+
+  .terms-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .term-title h3 {
+    font-size: 0.9rem;
+  }
+
+  .term-content p {
+    font-size: 0.85rem;
+  }
+}

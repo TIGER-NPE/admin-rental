@@ -1,0 +1,511 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #9ca3af;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: #4b5563;
+}
+
+.modal h2 {
+  margin-bottom: 24px;
+  font-size: 1.25rem;
+  color: #1a1a2e;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 0;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="url"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #25D366;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Status Toggle */
+.form-group.status-toggle {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.status-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+
+.status-text {
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toggle-wrapper input[type="checkbox"] {
+  display: none;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  background: #e5e7eb;
+  border-radius: 13px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-slider.available {
+  transform: translateX(22px);
+  background: #25D366;
+}
+
+.toggle-slider.unavailable {
+  transform: translateX(0);
+  background: #dc2626;
+}
+
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.available {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.status-badge.unavailable {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.status-hint {
+  margin: 8px 0 0 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-cancel {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.btn-cancel:hover {
+  background: #e5e7eb;
+}
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.photo-upload-container {
+  margin-bottom: 16px;
+}
+
+.car-photo-preview {
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px dashed #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s;
+}
+
+.car-photo-preview:hover {
+  border-color: #25D366;
+}
+
+.car-photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+  text-align: center;
+  padding: 20px;
+}
+
+.photo-placeholder span:first-child {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .status-label {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .toggle-wrapper {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Image Slider Styles */
+.image-slider-container {
+  margin-bottom: 16px;
+}
+
+.image-slider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.slider-btn {
+  background: #25D366;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.slider-btn:hover:not(:disabled) {
+  background: #1fb855;
+}
+
+.slider-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.slider-content {
+  flex: 1;
+  position: relative;
+  text-align: center;
+}
+
+.slider-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.slider-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(220, 38, 38, 0.9);
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.remove-image-btn:hover {
+  background: #dc2626;
+}
+
+.no-images {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 180px;
+  background: #f9fafb;
+  border-radius: 8px;
+  color: #9ca3af;
+}
+
+.no-images img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 8px;
+}
+
+.no-images p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.no-images span {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.add-image-row {
+  display: flex;
+  gap: 8px;
+}
+
+.add-image-row input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.add-image-row input:focus {
+  outline: none;
+  border-color: #25D366;
+}
+
+.add-image-row button {
+  background: #25D366;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.add-image-row button:hover:not(:disabled) {
+  background: #1fb855;
+}
+
+.add-image-row button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.image-thumbnails {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.thumbnail {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.thumbnail:hover {
+  border-color: #25D366;
+}
+
+.thumbnail.active {
+  border-color: #25D366;
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.car-form-modal {
+  max-width: 600px;
+}
+
+/* Availability Dates */
+.availability-dates {
+  background: #f0fdf4;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 8px;
+}
+
+.availability-dates label {
+  color: #166534;
+  font-weight: 600;
+}
+
+.date-hint {
+  margin: 0 0 12px 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.date-inputs-row {
+  display: flex;
+  gap: 12px;
+}
+
+.date-input-group {
+  flex: 1;
+}
+
+.date-input-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.85rem;
+}
+
+.date-input-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.date-input-group input:focus {
+  outline: none;
+  border-color: #25D366;
+}
+
+.clear-dates-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 6px 12px;
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-dates-btn:hover {
+  background: #fecaca;
+}
+
+@media (max-width: 480px) {
+  .date-inputs-row {
+    flex-direction: column;
+  }
+}

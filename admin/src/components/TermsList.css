@@ -1,0 +1,114 @@
+.terms-list {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+}
+
+.terms-list .loading,
+.terms-list .error-message {
+  padding: 40px;
+  text-align: center;
+  color: #666;
+}
+
+.terms-list .error-message {
+  color: #e74c3c;
+}
+
+.terms-list .empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: #999;
+}
+
+.terms-list .empty-state p {
+  margin-top: 16px;
+  font-size: 16px;
+}
+
+.terms-list .terms-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.terms-list .term-card {
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 20px;
+  background: #fafafa;
+  transition: box-shadow 0.2s;
+}
+
+.terms-list .term-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.terms-list .term-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.terms-list .term-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+.terms-list .term-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.terms-list .btn-edit,
+.terms-list .btn-delete {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  background: #fff;
+}
+
+.terms-list .btn-edit {
+  color: #1976d2;
+}
+
+.terms-list .btn-edit:hover {
+  background: #e3f2fd;
+}
+
+.terms-list .btn-delete {
+  color: #c62828;
+}
+
+.terms-list .btn-delete:hover {
+  background: #ffebee;
+}
+
+.terms-list .term-content {
+  color: #555;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.terms-list .term-content p {
+  margin: 0 0 8px 0;
+}
+
+.terms-list .term-content p:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .terms-list .terms-grid {
+    grid-template-columns: 1fr;
+  }
+}

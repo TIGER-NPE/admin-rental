@@ -1,0 +1,154 @@
+.driver-list {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.driver-list .loading,
+.driver-list .error-message {
+  padding: 40px;
+  text-align: center;
+  color: #666;
+}
+
+.driver-list .error-message {
+  color: #e74c3c;
+}
+
+.driver-list .empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: #999;
+}
+
+.driver-list .empty-state p {
+  margin-top: 16px;
+  font-size: 16px;
+}
+
+.driver-list .data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.driver-list .data-table th,
+.driver-list .data-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.driver-list .data-table th {
+  background: #fafafa;
+  font-weight: 600;
+  color: #333;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.driver-list .data-table td {
+  color: #444;
+  font-size: 14px;
+}
+
+.driver-list .data-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.driver-list .data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.driver-list .status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.driver-list .status-available {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.driver-list .status-busy {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.driver-list .status-offline {
+  background: #f5f5f5;
+  color: #757575;
+}
+
+.driver-list .actions {
+  display: flex;
+  gap: 8px;
+}
+
+.driver-list .driver-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.driver-list .driver-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+}
+
+.driver-list .driver-photo-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+}
+
+.driver-list .btn-edit,
+.driver-list .btn-delete {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.driver-list .btn-edit {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.driver-list .btn-edit:hover {
+  background: #bbdefb;
+}
+
+.driver-list .btn-delete {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.driver-list .btn-delete:hover {
+  background: #ffcdd2;
+}
+
+@media (max-width: 768px) {
+  .driver-list .data-table {
+    display: block;
+    overflow-x: auto;
+  }
+}

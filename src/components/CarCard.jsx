@@ -105,7 +105,7 @@ function CarCard({ car, onRent, onClick, selectedDate }) {
 
   const getImageUrl = (url) => {
     if (!url) {
-      return '/logo.svg'
+      return '/favicon.ico'
     }
     // Handle blob URLs (local preview)
     if (url.startsWith('blob:')) {
@@ -113,7 +113,7 @@ function CarCard({ car, onRent, onClick, selectedDate }) {
     }
     // Handle local paths
     if (url.startsWith('/')) {
-      return `${API_BASE.replace('/api', '')}${url}`
+      return url
     }
     return url
   }
@@ -148,7 +148,7 @@ function CarCard({ car, onRent, onClick, selectedDate }) {
               src={getImageUrl(images[currentSlide])} 
               alt={`${car.name} ${car.model}`}
               onError={(e) => {
-                e.target.src = '/logo.svg'
+                e.target.src = '/favicon.ico'
               }}
             />
             
@@ -186,8 +186,6 @@ function CarCard({ car, onRent, onClick, selectedDate }) {
           <img 
             src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=400" 
             alt={`${car.name} ${car.model}`}
-            width="400"
-            height="200"
           />
         )}
         
